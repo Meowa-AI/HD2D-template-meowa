@@ -3,6 +3,9 @@ extends Node3D
 ## camera) populated with billboarded pixel sprites. Walk around, talk to NPCs,
 ## and step into the tall grass/brush to trigger a random battle.
 
+const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
+const HD2DStage := preload("res://scripts/HD2DStage.gd")
+
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
 const ENCOUNTER_CHANCE := 0.22
@@ -43,52 +46,12 @@ func _ready() -> void:
 
 # ---------------------------------------------------------------- environment
 func _build_environment() -> void:
-	var env := Environment.new()
-	env.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	var psm := ProceduralSkyMaterial.new()
-	psm.sky_top_color = Color(0.40, 0.6, 0.85)
-	psm.sky_horizon_color = Color(0.86, 0.84, 0.74)
-	psm.ground_horizon_color = Color(0.62, 0.72, 0.56)
-	psm.ground_bottom_color = Color(0.5, 0.62, 0.42)
-	psm.sun_angle_max = 30.0
-	sky.sky_material = psm
-	env.sky = sky
-
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.9
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.05
-
-	env.glow_enabled = true
-	env.glow_intensity = 0.45
-	env.glow_bloom = 0.18
-	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
-	env.glow_hdr_threshold = 0.95
-
-	env.fog_enabled = true
-	env.fog_light_color = Color(0.84, 0.86, 0.82)
-	env.fog_density = 0.005
-	env.fog_sky_affect = 0.0
-	env.fog_aerial_perspective = 0.3
-
-	env.adjustment_enabled = true
-	env.adjustment_brightness = 1.02
-	env.adjustment_contrast = 1.08
-	env.adjustment_saturation = 1.18
-
 	var we := WorldEnvironment.new()
-	we.environment = env
+	we.environment = HD2DEnvironment.environment("field")
 	add_child(we)
 
 func _build_light() -> void:
-	var sun := DirectionalLight3D.new()
-	sun.light_color = Color(1.0, 0.94, 0.82)
-	sun.light_energy = 1.15
-	sun.shadow_enabled = true
-	sun.shadow_bias = 0.04
-	sun.rotation_degrees = Vector3(-52, -130, 0)
-	add_child(sun)
+	add_child(HD2DStage.key_light("field"))
 
 # --------------------------------------------------------------------- ground
 func _build_ground() -> void:
@@ -276,20 +239,10 @@ func _spawn_player() -> void:
 	add_child(_player)
 
 func _build_camera() -> void:
-	_cam = Camera3D.new()
-	_cam.fov = 46.0
+	_cam = HD2DStage.make_camera("field")
 	add_child(_cam)
 	_cam.global_position = _player.position + _cam_offset
 	_cam.look_at(_player.position + _cam_look, Vector3.UP)
-	var attr := CameraAttributesPractical.new()
-	attr.dof_blur_far_enabled = true
-	attr.dof_blur_far_distance = 24.0
-	attr.dof_blur_far_transition = 8.0
-	attr.dof_blur_near_enabled = true
-	attr.dof_blur_near_distance = 6.0
-	attr.dof_blur_near_transition = 3.0
-	attr.dof_blur_amount = 0.08
-	_cam.attributes = attr
 	_cam.make_current()
 
 # ------------------------------------------------------------------------- UI
