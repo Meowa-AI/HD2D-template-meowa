@@ -10,6 +10,9 @@ extends Node3D
 ## Combatants are billboarded pixel sprites standing in a 3D world in front of a
 ## painted backdrop, with a depth-of-field camera — the HD-2D look.
 
+const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
+const HD2DStage := preload("res://scripts/HD2DStage.gd")
+
 # ----- tuning ---------------------------------------------------------------
 const WEAKNESS_MULT := 1.6
 const BREAK_MULT := 1.8
@@ -102,43 +105,14 @@ func _ready() -> void:
 
 # ----- world / backdrop -----------------------------------------------------
 func _build_world() -> void:
-	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.04, 0.05, 0.08)
-	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.7, 0.72, 0.8)
-	env.ambient_light_energy = 1.1
-	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.glow_enabled = true
-	env.glow_intensity = 0.5
-	env.glow_bloom = 0.15
-	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
-	env.adjustment_enabled = true
-	env.adjustment_saturation = 1.12
-	env.adjustment_contrast = 1.05
 	var we := WorldEnvironment.new()
-	we.environment = env
+	we.environment = HD2DEnvironment.environment("battle")
 	add_child(we)
 
-	var sun := DirectionalLight3D.new()
-	sun.light_color = Color(1.0, 0.93, 0.8)
-	sun.light_energy = 1.0
-	sun.rotation_degrees = Vector3(-50, -120, 0)
-	add_child(sun)
+	add_child(HD2DStage.key_light("battle"))
 
-	# Painted backdrop as a big quad far behind the fighters (gets DoF bokeh).
-	var bg := MeshInstance3D.new()
-	var qm := QuadMesh.new()
-	qm.size = Vector2(46, 26)
-	bg.mesh = qm
-	var bmat := StandardMaterial3D.new()
-	if ResourceLoader.exists("res://assets/textures/battle_bg.jpg"):
-		bmat.albedo_texture = load("res://assets/textures/battle_bg.jpg")
-	bmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	bmat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
-	bg.mesh.material = bmat
-	bg.position = Vector3(0, 9, -16)
-	add_child(bg)
+	# Painted backdrop quad far behind the fighters (gets DoF bokeh).
+	add_child(HD2DStage.backdrop("res://assets/textures/battle_bg.jpg", Vector2(46, 26), Vector3(0, 9, -16)))
 
 	# Ground for shadows to land on; tinted to blend with the backdrop floor.
 	var ground := HD2D.ground("res://assets/textures/grass.png", 40.0, 10.0)
@@ -220,17 +194,10 @@ func _place(c: Combatant, pos: Vector3, enemy: bool) -> void:
 	c.sprite = spr
 
 func _build_camera() -> void:
-	_cam = Camera3D.new()
-	_cam.fov = 42.0
+	_cam = HD2DStage.make_camera("battle")
 	add_child(_cam)
 	_cam.position = Vector3(0, 6.4, 13.5)
 	_cam.look_at(Vector3(0, 2.4, -2), Vector3.UP)
-	var attr := CameraAttributesPractical.new()
-	attr.dof_blur_far_enabled = true
-	attr.dof_blur_far_distance = 19.0
-	attr.dof_blur_far_transition = 6.0
-	attr.dof_blur_amount = 0.06
-	_cam.attributes = attr
 	_cam.make_current()
 
 # ===========================================================================
