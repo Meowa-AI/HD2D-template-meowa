@@ -5,6 +5,7 @@ extends Node3D
 
 const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
 const HD2DStage := preload("res://scripts/HD2DStage.gd")
+const GrassField := preload("res://scripts/GrassField.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -35,6 +36,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_light()
 	_build_ground()
+	add_child(GrassField.build(GROUND_SIZE))
 	_build_bounds()
 	_spawn_props()
 	_spawn_grass_zones()
@@ -300,6 +302,7 @@ func _build_ui() -> void:
 func _process(delta: float) -> void:
 	if _player == null:
 		return
+	WeatherSystem.set_body(0, _player.global_position)
 	# Camera follow.
 	var target := _player.global_position + _cam_offset
 	_cam.global_position = _cam.global_position.lerp(target, clampf(delta * 6.0, 0, 1))

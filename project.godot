@@ -16,6 +16,7 @@ config/icon="res://icon.svg"
 GameData="*res://scripts/GameData.gd"
 Audio="*res://scripts/Audio.gd"
 SceneManager="*res://scripts/SceneManager.gd"
+WeatherSystem="*res://scripts/WeatherSystem.gd"
 
 [display]
 
