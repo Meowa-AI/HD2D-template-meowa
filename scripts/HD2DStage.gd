@@ -39,12 +39,12 @@ static func apply_dof(cam: Camera3D, profile: String = "field") -> void:
 			attr.dof_blur_amount = 0.12
 		_:
 			attr.dof_blur_far_enabled = true
-			attr.dof_blur_far_distance = 26.0
-			attr.dof_blur_far_transition = 5.0
+			attr.dof_blur_far_distance = 38.0
+			attr.dof_blur_far_transition = 8.0
 			attr.dof_blur_near_enabled = true
-			attr.dof_blur_near_distance = 16.5
+			attr.dof_blur_near_distance = 12.0
 			attr.dof_blur_near_transition = 5.0
-			attr.dof_blur_amount = 0.34
+			attr.dof_blur_amount = 0.20
 	cam.attributes = attr
 
 static func backdrop(tex_path: String, size: Vector2, pos: Vector3, modulate: Color = Color.WHITE) -> MeshInstance3D:
@@ -110,7 +110,14 @@ static func windblown_prop(tex_path: String, world_height: float, sway: float = 
 	mat.set_shader_parameter("sway", sway)
 	qm.material = mat
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	WeatherSystem.register(mat)
+	# Reach the WeatherSystem autoload via the tree (not the global identifier) so
+	# this static helper still compiles in contexts where autoloads aren't globals
+	# (e.g. headless tool/test loads).
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree:
+		var ws = (ml as SceneTree).root.get_node_or_null("WeatherSystem")
+		if ws != null:
+			ws.register(mat)
 	return mi
 
 # A small colored point light for local warmth (torch, lamp, magic).

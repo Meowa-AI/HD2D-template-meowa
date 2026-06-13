@@ -33,7 +33,7 @@ func _initialize() -> void:
 	_eq(f.glow_bloom, 0.2, "field.glow_bloom")
 	_eq(f.glow_hdr_threshold, 1.0, "field.glow_hdr")
 	_eq(f.fog_enabled, true, "field.fog")
-	_eq(f.fog_density, 0.009, "field.fog_density")
+	_eq(f.fog_density, 0.0045, "field.fog_density")
 	_eq(f.adjustment_saturation, 1.16, "field.saturation")
 	# CB signature: lilac ambient (the GD4 indigo-shadow mechanism) + SSAO.
 	_eq(f.ambient_light_source, Environment.AMBIENT_SOURCE_COLOR, "field.ambient_src")
@@ -64,7 +64,7 @@ func _initialize() -> void:
 	var fc := Stage.make_camera("field")
 	_eq(fc.fov, 30.0, "field.cam.fov")
 	_eq((fc.attributes as CameraAttributesPractical).dof_blur_near_enabled, true, "field.cam.near_dof")
-	_eq((fc.attributes as CameraAttributesPractical).dof_blur_amount, 0.34, "field.cam.dof_amount")
+	_eq((fc.attributes as CameraAttributesPractical).dof_blur_amount, 0.20, "field.cam.dof_amount")
 	var bc := Stage.make_camera("battle")
 	_eq(bc.fov, 42.0, "battle.cam.fov")
 	_eq((bc.attributes as CameraAttributesPractical).dof_blur_near_enabled, false, "battle.cam.no_near_dof")

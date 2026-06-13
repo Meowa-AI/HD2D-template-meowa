@@ -6,6 +6,7 @@ extends Node3D
 const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
 const HD2DStage := preload("res://scripts/HD2DStage.gd")
 const GrassField := preload("res://scripts/GrassField.gd")
+const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -36,7 +37,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_light()
 	_build_ground()
-	add_child(GrassField.build(GROUND_SIZE))
+	add_child(GrassField.build(TieredTerrain.FLAT * 2.0))  # grass blanket over the flat meadow
 	_build_bounds()
 	_spawn_props()
 	_spawn_grass_zones()
@@ -59,10 +60,11 @@ func _build_light() -> void:
 
 # --------------------------------------------------------------------- ground
 func _build_ground() -> void:
-	var grass := HD2D.ground("res://assets/textures/grass.png", GROUND_SIZE, GROUND_SIZE / 3.0)
-	add_child(grass)
+	# CB-style tiered terrain: flat meadow ringed by rising grass terraces with
+	# dirt cliff faces. Replaces the old flat plane.
+	add_child(TieredTerrain.build(GROUND_SIZE * 0.5, "res://assets/textures/grass.png", "res://assets/textures/path.png"))
 
-	# A winding dirt path: a few overlapping strips of path texture.
+	# A winding dirt path on the flat meadow: a few overlapping strips.
 	var path_points := [Vector3(-26, 0, 18), Vector3(-8, 0, 6), Vector3(4, 0, -4), Vector3(18, 0, -18)]
 	for i in range(path_points.size() - 1):
 		_path_strip(path_points[i], path_points[i + 1])
@@ -148,7 +150,7 @@ func _spawn_props() -> void:
 
 func _add_billboard_prop(tex_path: String, pos: Vector3, height: float, shadow: bool, sway: float = 0.0) -> Node3D:
 	var root := Node3D.new()
-	root.position = pos
+	root.position = Vector3(pos.x, TieredTerrain.height_at(pos.x, pos.z), pos.z)  # sit on the terrain
 	var spr: Node3D
 	if sway > 0.0:
 		spr = HD2DStage.windblown_prop(tex_path, height, sway)
@@ -239,7 +241,7 @@ func _spawn_player() -> void:
 	_player = CharacterBody3D.new()
 	_player.set_script(load("res://scripts/Player.gd"))
 	_player.sprite_path = "res://assets/sprites/hero.png"
-	var start := Vector3(2, 0, 16)
+	var start := Vector3(0, 0, 6)
 	if SceneManager.has_meta("field_return_pos"):
 		start = SceneManager.get_meta("field_return_pos")
 		SceneManager.remove_meta("field_return_pos")

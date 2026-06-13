@@ -36,5 +36,12 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9) 
 	qm.material = smat
 	p.draw_pass_1 = qm
 
-	WeatherSystem.register(smat)
+	# Reach the WeatherSystem autoload via the tree (not the global identifier) so
+	# this static helper compiles even when autoloads aren't registered as globals.
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree:
+		var ws = (ml as SceneTree).root.get_node_or_null("WeatherSystem")
+		if ws != null:
+			ws.register(smat)
 	return p
+
