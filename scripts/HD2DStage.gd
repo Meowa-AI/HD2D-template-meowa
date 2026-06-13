@@ -47,7 +47,7 @@ static func apply_dof(cam: Camera3D, profile: String = "field") -> void:
 			attr.dof_blur_amount = 0.34
 	cam.attributes = attr
 
-static func backdrop(tex_path: String, size: Vector2, pos: Vector3) -> MeshInstance3D:
+static func backdrop(tex_path: String, size: Vector2, pos: Vector3, modulate: Color = Color.WHITE) -> MeshInstance3D:
 	var bg := MeshInstance3D.new()
 	var qm := QuadMesh.new()
 	qm.size = size
@@ -55,6 +55,7 @@ static func backdrop(tex_path: String, size: Vector2, pos: Vector3) -> MeshInsta
 	var bmat := StandardMaterial3D.new()
 	if ResourceLoader.exists(tex_path):
 		bmat.albedo_texture = load(tex_path)
+	bmat.albedo_color = modulate  # cool tint to harmonize a warm backdrop with the CB grade
 	bmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	bmat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
 	bg.mesh.material = bmat

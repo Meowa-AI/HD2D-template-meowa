@@ -112,7 +112,7 @@ func _build_world() -> void:
 	add_child(HD2DStage.key_light("battle"))
 
 	# Painted backdrop quad far behind the fighters (gets DoF bokeh).
-	add_child(HD2DStage.backdrop("res://assets/textures/battle_bg.jpg", Vector2(46, 26), Vector3(0, 9, -16)))
+	add_child(HD2DStage.backdrop("res://assets/textures/battle_bg.jpg", Vector2(46, 26), Vector3(0, 9, -16), Color(0.80, 0.86, 1.0)))
 
 	# Ground for shadows to land on; tinted to blend with the backdrop floor.
 	var ground := HD2D.ground("res://assets/textures/grass.png", 40.0, 10.0)

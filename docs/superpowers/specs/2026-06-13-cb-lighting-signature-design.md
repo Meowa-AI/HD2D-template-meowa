@@ -93,3 +93,23 @@ Each file keeps its single responsibility; this is a values + two-call-site chan
 - Exact ambient energy vs sun energy balance for sprite readability — tuned at A2.
 - Whether to cool the procedural sky colors too (currently warm-ish horizon) — decide by screenshot at A1.
 - SSAO strength (radius/intensity/power) — tuned at A1.
+
+---
+
+## Final CB values (A3)
+
+Implemented + verified (Title→Field→Battle boot under xvfb+vulkan, no errors; factory value-test PASS).
+
+**Field profile** (`HD2DEnvironment` field / `HD2DStage` field):
+- Ambient `AMBIENT_SOURCE_COLOR` lilac `(0.349,0.325,0.420)` energy **0.6** (the GD4 indigo-shadow mechanism).
+- Cooled procedural sky: top `(0.34,0.46,0.66)`, horizon `(0.64,0.70,0.78)`, ground_horizon `(0.52,0.58,0.62)`, ground_bottom `(0.42,0.48,0.50)`.
+- FILMIC, exposure 0.97; glow 1.0 / bloom 0.2 / hdr 1.0; SSAO enabled (radius 2.0, intensity 2.0, power 1.5); cool fog `(0.502,0.600,0.702)` density 0.009 aerial 0.35; grade contrast 1.16 / saturation 1.16.
+- Sun near-white `(1.0,0.98,0.95)` energy 1.0, shadows on (opacity 0.85, blur 1.5), rot **(-48,-28,0)** — front-lights billboards so sprites stay readable.
+
+**Battle profile** (fog off): ambient lilac energy 0.7; glow 1.0; SSAO same; grade 1.16/1.16; sun near-white energy 1.0 rot (-45,-20,0); painted backdrop given a cool modulate `(0.80,0.86,1.0)` to harmonize with the grade.
+
+**Lit sprites:** `Player.gd` + `Battle._place` pass `shaded=true` (props/bushes already lit); `HD2D.character()` default left `false`.
+
+**Key learning:** camera-facing billboards lit by a back-angled sun render as dark silhouettes (the lilac ambient color is too dark to carry them alone). The fix is sun *direction* — front-light from behind/above the camera — not raising ambient. Trades some shadow drama for readability, matching CB's priority.
+
+**Deferred (later CB specs):** day/night cycle (B-adjacent), animated grass + wind (Spec B), 3D tile-mesh terrain with real height (Spec C), water/clouds (Spec D).
