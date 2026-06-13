@@ -6,14 +6,18 @@ static func key_light(profile: String = "field") -> DirectionalLight3D:
 	var sun := DirectionalLight3D.new()
 	match profile:
 		"battle":
-			sun.light_color = Color(1.0, 0.93, 0.8)
+			sun.light_color = Color(1.0, 0.98, 0.95)  # CB near-white noon
 			sun.light_energy = 1.0
 			sun.rotation_degrees = Vector3(-50, -120, 0)
 		_:
-			sun.light_color = Color(1.0, 0.94, 0.82)
-			sun.light_energy = 1.15
+			# CB: near-white sun; indigo shadow mood comes from the lilac ambient,
+			# not a shadow_color (which does not exist in Godot 4.6).
+			sun.light_color = Color(1.0, 0.98, 0.95)
+			sun.light_energy = 1.0
 			sun.shadow_enabled = true
 			sun.shadow_bias = 0.04
+			sun.shadow_opacity = 0.85
+			sun.shadow_blur = 1.5
 			sun.rotation_degrees = Vector3(-52, -130, 0)
 	return sun
 
