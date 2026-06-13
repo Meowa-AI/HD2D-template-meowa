@@ -1,6 +1,7 @@
 extends SceneTree
-## Headless assertions that the extracted factories emit exactly the original
-## inline values. Run: godot --headless --script res://tests/test_hd2d_factories.gd
+## Headless assertions that the factories emit the expected per-profile values
+## (field values are the M2-tuned grade; battle is the original).
+## Run: godot --headless --script res://tests/test_hd2d_factories.gd
 ## Uses preload (not class_name) so it works without the global-class cache.
 
 const Env := preload("res://scripts/HD2DEnvironment.gd")
@@ -28,12 +29,12 @@ func _initialize() -> void:
 	var f := Env.environment("field")
 	_eq(f.background_mode, Environment.BG_SKY, "field.bg")
 	_eq(f.tonemap_mode, Environment.TONE_MAPPER_FILMIC, "field.tonemap")
-	_eq(f.glow_intensity, 0.45, "field.glow_intensity")
-	_eq(f.glow_bloom, 0.18, "field.glow_bloom")
-	_eq(f.glow_hdr_threshold, 0.95, "field.glow_hdr")
+	_eq(f.glow_intensity, 0.5, "field.glow_intensity")
+	_eq(f.glow_bloom, 0.2, "field.glow_bloom")
+	_eq(f.glow_hdr_threshold, 1.0, "field.glow_hdr")
 	_eq(f.fog_enabled, true, "field.fog")
-	_eq(f.fog_density, 0.005, "field.fog_density")
-	_eq(f.adjustment_saturation, 1.18, "field.saturation")
+	_eq(f.fog_density, 0.004, "field.fog_density")
+	_eq(f.adjustment_saturation, 1.32, "field.saturation")
 
 	var b := Env.environment("battle")
 	_eq(b.background_mode, Environment.BG_COLOR, "battle.bg")
@@ -54,9 +55,9 @@ func _initialize() -> void:
 	_eq(bl.rotation_degrees, Vector3(-50, -120, 0), "battle.light.rot")
 
 	var fc := Stage.make_camera("field")
-	_eq(fc.fov, 46.0, "field.cam.fov")
+	_eq(fc.fov, 30.0, "field.cam.fov")
 	_eq((fc.attributes as CameraAttributesPractical).dof_blur_near_enabled, true, "field.cam.near_dof")
-	_eq((fc.attributes as CameraAttributesPractical).dof_blur_amount, 0.08, "field.cam.dof_amount")
+	_eq((fc.attributes as CameraAttributesPractical).dof_blur_amount, 0.34, "field.cam.dof_amount")
 	var bc := Stage.make_camera("battle")
 	_eq(bc.fov, 42.0, "battle.cam.fov")
 	_eq((bc.attributes as CameraAttributesPractical).dof_blur_near_enabled, false, "battle.cam.no_near_dof")

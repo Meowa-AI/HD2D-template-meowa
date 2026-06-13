@@ -12,8 +12,8 @@ const ENCOUNTER_CHANCE := 0.22
 
 var _player: CharacterBody3D
 var _cam: Camera3D
-var _cam_offset := Vector3(0.0, 7.6, 10.5)
-var _cam_look := Vector3(0.0, 1.8, 0.0)
+var _cam_offset := Vector3(0.0, 10.5, 18.0)
+var _cam_look := Vector3(0.0, 1.6, 0.0)
 
 var _interactables: Array = []
 var _grass_zones: Array = []
@@ -41,6 +41,8 @@ func _ready() -> void:
 	_spawn_npcs()
 	_spawn_player()
 	_build_camera()
+	add_child(HD2DStage.dust(GROUND_SIZE))
+	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(-6.5, 2.6, 9.0)))
 	_build_ui()
 	Audio.play_bgm("res://assets/audio/field_bgm.mp3")
 
