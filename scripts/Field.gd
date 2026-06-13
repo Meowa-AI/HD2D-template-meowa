@@ -7,6 +7,7 @@ const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
 const HD2DStage := preload("res://scripts/HD2DStage.gd")
 const GrassField := preload("res://scripts/GrassField.gd")
 const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
+const CloudShadowsScene := preload("res://scripts/CloudShadows.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -38,6 +39,9 @@ func _ready() -> void:
 	_build_light()
 	_build_ground()
 	add_child(GrassField.build(TieredTerrain.FLAT * 2.0))  # grass blanket over the flat meadow
+	var clouds := CloudShadowsScene.new()
+	clouds.setup(GROUND_SIZE * 0.5)
+	add_child(clouds)
 	_build_bounds()
 	_spawn_props()
 	_spawn_grass_zones()
@@ -62,7 +66,7 @@ func _build_light() -> void:
 func _build_ground() -> void:
 	# CB-style tiered terrain: flat meadow ringed by rising grass terraces with
 	# dirt cliff faces. Replaces the old flat plane.
-	add_child(TieredTerrain.build(GROUND_SIZE * 0.5, "res://assets/textures/grass.png", "res://assets/textures/path.png"))
+	add_child(TieredTerrain.build(GROUND_SIZE * 0.5, "res://assets/textures/grass.png", "res://assets/textures/cliff.png"))
 
 	# A winding dirt path on the flat meadow: a few overlapping strips.
 	var path_points := [Vector3(-26, 0, 18), Vector3(-8, 0, 6), Vector3(4, 0, -4), Vector3(18, 0, -18)]

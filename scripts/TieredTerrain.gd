@@ -121,7 +121,7 @@ static func _cliff_material(tex_path: String) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	if ResourceLoader.exists(tex_path):
 		m.albedo_texture = load(tex_path)
-	m.albedo_color = Color(0.72, 0.66, 0.58)  # earthy dirt cliff
+	m.albedo_color = Color(1.0, 0.98, 0.94)  # rock texture (already brightened)
 	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
 	m.uv1_scale = Vector3(0.5, 0.5, 1.0)
 	m.roughness = 1.0
