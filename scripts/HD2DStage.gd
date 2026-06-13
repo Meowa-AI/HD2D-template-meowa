@@ -90,6 +90,29 @@ static func dust(area_size: float = 40.0, amount: int = 220) -> GPUParticles3D:
 	p.position = Vector3(0, 3, 0)
 	return p
 
+# A swaying foliage billboard (tree/bush): a +Z-facing standing quad with the
+# windblown shader, registered with WeatherSystem so the crown sways in the wind.
+static func windblown_prop(tex_path: String, world_height: float, sway: float = 1.0) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var aspect := 1.0
+	var tex: Texture2D = null
+	if ResourceLoader.exists(tex_path):
+		tex = load(tex_path)
+		aspect = float(tex.get_width()) / float(tex.get_height())
+	var qm := QuadMesh.new()
+	qm.size = Vector2(world_height * aspect, world_height)
+	qm.center_offset = Vector3(0, world_height * 0.5, 0)  # base at y=0
+	mi.mesh = qm
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://shaders/windblown.gdshader")
+	mat.set_shader_parameter("tex", tex)
+	mat.set_shader_parameter("prop_height", world_height)
+	mat.set_shader_parameter("sway", sway)
+	qm.material = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	WeatherSystem.register(mat)
+	return mi
+
 # A small colored point light for local warmth (torch, lamp, magic).
 static func accent_light(color: Color, energy: float, pos: Vector3, rng: float = 9.0) -> OmniLight3D:
 	var o := OmniLight3D.new()

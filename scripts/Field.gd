@@ -112,7 +112,7 @@ func _spawn_props() -> void:
 			var r := ring - row * 3.5 - randf() * 4.0
 			var pos := Vector3(cos(ang) * r, 0, sin(ang) * r)
 			var name: String = trees[randi() % trees.size()]
-			_add_billboard_prop("res://assets/sprites/props/%s.png" % name, pos, 4.2 + randf() * 1.6, true)
+			_add_billboard_prop("res://assets/sprites/props/%s.png" % name, pos, 4.2 + randf() * 1.6, true, 0.5 + randf() * 0.4)
 
 	# Scattered inner trees & bushes for depth — kept in the far half so they
 	# never block the camera, which sits behind the player (high +Z).
@@ -122,7 +122,7 @@ func _spawn_props() -> void:
 			continue
 		var pick: String = ["tree_oak", "tree_pine", "bush", "bush", "tree_blossom", "tree_maple"][randi() % 6]
 		var h := 1.4 if pick == "bush" else 3.4
-		_add_billboard_prop("res://assets/sprites/props/%s.png" % pick, pos, h + randf() * 0.6, pick != "bush")
+		_add_billboard_prop("res://assets/sprites/props/%s.png" % pick, pos, h + randf() * 0.6, pick != "bush", 0.8 + randf() * 0.4)
 
 	# A little camp near the path crossing.
 	_add_billboard_prop("res://assets/sprites/props/well.png", Vector3(-9, 0, 7), 2.0, true)
@@ -146,10 +146,14 @@ func _spawn_props() -> void:
 		"lines": ["You found 150 leaves and a Healing Grape!", "(Your party feels encouraged.)"],
 	})
 
-func _add_billboard_prop(tex_path: String, pos: Vector3, height: float, shadow: bool) -> Node3D:
+func _add_billboard_prop(tex_path: String, pos: Vector3, height: float, shadow: bool, sway: float = 0.0) -> Node3D:
 	var root := Node3D.new()
 	root.position = pos
-	var spr := HD2D.character(tex_path, height, true)
+	var spr: Node3D
+	if sway > 0.0:
+		spr = HD2DStage.windblown_prop(tex_path, height, sway)
+	else:
+		spr = HD2D.character(tex_path, height, true)
 	root.add_child(spr)
 	if shadow:
 		root.add_child(HD2D.blob_shadow(height * 0.16, 0.4))
@@ -180,7 +184,7 @@ func _make_grass_zone(center: Vector3, size: Vector2) -> void:
 	var n := int(size.x * size.y / 8.0)
 	for i in n:
 		var p := center + Vector3(randf_range(-size.x * 0.5, size.x * 0.5), 0, randf_range(-size.y * 0.5, size.y * 0.5))
-		var spr := HD2D.character("res://assets/sprites/props/bush.png", randf_range(0.7, 1.1), true)
+		var spr := HD2DStage.windblown_prop("res://assets/sprites/props/bush.png", randf_range(0.7, 1.1), 1.3)
 		var holder := Node3D.new()
 		holder.position = p
 		holder.add_child(spr)
