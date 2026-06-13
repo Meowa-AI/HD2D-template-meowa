@@ -1,0 +1,45 @@
+{
+  "api_job_id": "c10bf306-d3e5-445f-906c-53af65ed20ee",
+  "status": "success",
+  "error": "",
+  "output": {
+    "url": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_00.png",
+    "final_sprite_paths": [
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_00.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_01.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_02.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_03.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_04.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_05.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_06.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_07.png"
+    ],
+    "prompt_detail": "正面，长满绿色斑驳苔藓的灰色圆润巨石，表面有几道深邃裂纹；正面，箍着铁皮的棕色木桶，桶身有几道明显的木材划痕；正面，立着的木制路标，顶端挂着一块刻有抽象几何箭头的木板；正面，镶嵌着金色金属包边的深褐色木制宝箱，锁扣处有星芒状装饰；正面，表面带有十字加固木条的方形木箱，木纹清晰可见；正面，由粗糙石块堆砌而成的圆形水井，井口上方架着一个木制辘轳；正面，黑色铸铁材质的复古街灯，灯罩内有放射状的白色光芒核心；正面，由两根横木和三根竖木组成的木栅栏段，木材表面有风化的木刺纹理",
+    "sprite_pack_names": [
+      "苔藓巨石",
+      "木桶",
+      "木制路标",
+      "木制宝箱",
+      "方形木箱",
+      "圆形水井",
+      "复古街灯",
+      "木栅栏"
+    ],
+    "sprite_crop_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_00.png",
+    "sprite_pack_preview_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A56%3A58-c10bf306-d3e5-445f-906c-53af65ed20ee/sprite_pack_preview.png"
+  },
+  "stage": "completed",
+  "progress": {
+    "percent": 100,
+    "label": "已完成"
+  },
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "c10bf306-d3e5-445f-906c-53af65ed20ee"
+  }
+}

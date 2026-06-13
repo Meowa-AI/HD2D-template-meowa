@@ -1,0 +1,11 @@
+# Secrets
+.env
+
+# Godot
+.godot/
+*.translation
+export_presets.cfg
+
+# Meowa generation working dirs
+**/.meow_art/
+.agents/skills/game-assets/.meow_art/

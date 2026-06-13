@@ -1,0 +1,116 @@
+{
+  "job_id": "workflow-music_generator-09aad5d2d0a04c799b10a42e",
+  "job_type": "workflow",
+  "status": "success",
+  "stage": "completed",
+  "animation_type": null,
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "progress": {
+    "label": "已完成",
+    "percent": 100
+  },
+  "result": {
+    "job_name": "034808_default_epic_HD_2D_JRPG_turn_based_battle_theme_driving_strings_brass_pe",
+    "run_dir": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:21-workflow-music_generator-09aad5d2d0a04c799b10a42e/",
+    "metadata_path": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:21-workflow-music_generator-09aad5d2d0a04c799b10a42e/metadata.json",
+    "metadata": {
+      "run_dir": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:21-workflow-music_generator-09aad5d2d0a04c799b10a42e/",
+      "raw_prompt": "epic HD-2D JRPG turn-based battle theme, driving strings, brass, percussion, heroic tense, loop-friendly",
+      "name": "Epic HD-2D JRPG Battle Theme",
+      "summary": "A 2-minute epic, high-energy JRPG battle theme in D minor at 145 BPM in 4/4, featuring driving orchestral strings, heroic brass fanfares, thunderous cinematic percussion, and rhythmic piano stabs. Instrumental only, no vocals.",
+      "timestamps_detail": "[0:00 - 0:20] Intro: Intensity: 7/10.\nA high-octane opening defined by aggressive, driving string ostinatos and sharp, syncopated brass stabs. The rhythm is fast and propulsive, anchored by heavy orchestral percussion including taiko drums and cinematic hits. The atmosphere is immediately tense and heroic, setting a stage for a high-stakes turn-based encounter.\n\n[0:20 - 1:00] Main Theme: Intensity: 9/10.\nThe core battle groove, characterized by a soaring, heroic melody played by unison violins and French horns. The rhythm is relentless, featuring a steady 16th-note pulse in the strings and powerful, punctuated brass accents. The orchestration is dense and epic, with piano arpeggios adding a layer of urgency. The melody is bold and memorable, designed to loop seamlessly while maintaining a feeling of constant, high-stakes action.\n\n[1:00 - 1:40] Variation: Intensity: 8/10.\nA slightly more rhythmic and percussive section that shifts focus to the low-end. The brass takes a backseat to driving, low-register string runs and heavy, rhythmic timpani rolls. The energy remains high but shifts toward a more tactical, focused feel. Subtle glockenspiel accents sparkle over the top, adding a touch of HD-2D aesthetic charm to the intensity.\n\n[1:40 - 2:00] Loop Outro: Intensity: 7/10.\nA seamless transition back to the start, stripping away the heaviest brass layers while maintaining the driving string ostinato and percussion pulse. The intensity tapers slightly to allow for a clean, natural loop back to the intro, ensuring the battle theme can repeat indefinitely without fatigue.",
+      "duration_seconds": 180,
+      "loop": true,
+      "audio_generate": true,
+      "demo": true,
+      "provider": "lyria",
+      "generation_mode": "music_audio",
+      "prepare_only": false,
+      "audio_path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+      "audio_paths": [
+        "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3"
+      ],
+      "audios": [
+        {
+          "type": "music",
+          "label": "Epic HD-2D JRPG Battle Theme",
+          "name": "Epic HD-2D JRPG Battle Theme",
+          "path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+          "content_type": "audio/mpeg",
+          "duration_seconds": 30,
+          "provider": "lyria"
+        }
+      ],
+      "content_type": "audio/mpeg",
+      "audio_bytes": 744609,
+      "model": "lyria-3-clip-preview",
+      "request_id": "-9IsasOMGPSCg8UP1MyEqQ4",
+      "elapsed_seconds": 10.341,
+      "reference_image_paths": [],
+      "reference_image_count": 0,
+      "prompt_result": {
+        "raw_prompt": "epic HD-2D JRPG turn-based battle theme, driving strings, brass, percussion, heroic tense, loop-friendly",
+        "name": "Epic HD-2D JRPG Battle Theme",
+        "summary": "A 2-minute epic, high-energy JRPG battle theme in D minor at 145 BPM in 4/4, featuring driving orchestral strings, heroic brass fanfares, thunderous cinematic percussion, and rhythmic piano stabs. Instrumental only, no vocals.",
+        "timestamps_detail": "[0:00 - 0:20] Intro: Intensity: 7/10.\nA high-octane opening defined by aggressive, driving string ostinatos and sharp, syncopated brass stabs. The rhythm is fast and propulsive, anchored by heavy orchestral percussion including taiko drums and cinematic hits. The atmosphere is immediately tense and heroic, setting a stage for a high-stakes turn-based encounter.\n\n[0:20 - 1:00] Main Theme: Intensity: 9/10.\nThe core battle groove, characterized by a soaring, heroic melody played by unison violins and French horns. The rhythm is relentless, featuring a steady 16th-note pulse in the strings and powerful, punctuated brass accents. The orchestration is dense and epic, with piano arpeggios adding a layer of urgency. The melody is bold and memorable, designed to loop seamlessly while maintaining a feeling of constant, high-stakes action.\n\n[1:00 - 1:40] Variation: Intensity: 8/10.\nA slightly more rhythmic and percussive section that shifts focus to the low-end. The brass takes a backseat to driving, low-register string runs and heavy, rhythmic timpani rolls. The energy remains high but shifts toward a more tactical, focused feel. Subtle glockenspiel accents sparkle over the top, adding a touch of HD-2D aesthetic charm to the intensity.\n\n[1:40 - 2:00] Loop Outro: Intensity: 7/10.\nA seamless transition back to the start, stripping away the heaviest brass layers while maintaining the driving string ostinato and percussion pulse. The intensity tapers slightly to allow for a clean, natural loop back to the intro, ensuring the battle theme can repeat indefinitely without fatigue.",
+        "reference_image_count": 0,
+        "runner": {
+          "success": true,
+          "fallback_used": false,
+          "attempts": [
+            {
+              "attempt": 1,
+              "ok": true,
+              "tool_called": true
+            }
+          ],
+          "error": "",
+          "tool_args": {
+            "timestamps_detail": "[0:00 - 0:20] Intro: Intensity: 7/10.\nA high-octane opening defined by aggressive, driving string ostinatos and sharp, syncopated brass stabs. The rhythm is fast and propulsive, anchored by heavy orchestral percussion including taiko drums and cinematic hits. The atmosphere is immediately tense and heroic, setting a stage for a high-stakes turn-based encounter.\n\n[0:20 - 1:00] Main Theme: Intensity: 9/10.\nThe core battle groove, characterized by a soaring, heroic melody played by unison violins and French horns. The rhythm is relentless, featuring a steady 16th-note pulse in the strings and powerful, punctuated brass accents. The orchestration is dense and epic, with piano arpeggios adding a layer of urgency. The melody is bold and memorable, designed to loop seamlessly while maintaining a feeling of constant, high-stakes action.\n\n[1:00 - 1:40] Variation: Intensity: 8/10.\nA slightly more rhythmic and percussive section that shifts focus to the low-end. The brass takes a backseat to driving, low-register string runs and heavy, rhythmic timpani rolls. The energy remains high but shifts toward a more tactical, focused feel. Subtle glockenspiel accents sparkle over the top, adding a touch of HD-2D aesthetic charm to the intensity.\n\n[1:40 - 2:00] Loop Outro: Intensity: 7/10.\nA seamless transition back to the start, stripping away the heaviest brass layers while maintaining the driving string ostinato and percussion pulse. The intensity tapers slightly to allow for a clean, natural loop back to the intro, ensuring the battle theme can repeat indefinitely without fatigue.",
+            "name": "Epic HD-2D JRPG Battle Theme",
+            "summary": "A 2-minute epic, high-energy JRPG battle theme in D minor at 145 BPM in 4/4, featuring driving orchestral strings, heroic brass fanfares, thunderous cinematic percussion, and rhythmic piano stabs. Instrumental only, no vocals."
+          }
+        }
+      },
+      "storage": "local",
+      "workflow_id": "music_generator",
+      "template_id": "default",
+      "operator_chain": [
+        "music_prompt_rewrite",
+        "music_audio_generation"
+      ]
+    },
+    "name": "Epic HD-2D JRPG Battle Theme",
+    "summary": "A 2-minute epic, high-energy JRPG battle theme in D minor at 145 BPM in 4/4, featuring driving orchestral strings, heroic brass fanfares, thunderous cinematic percussion, and rhythmic piano stabs. Instrumental only, no vocals.",
+    "timestamps_detail": "[0:00 - 0:20] Intro: Intensity: 7/10.\nA high-octane opening defined by aggressive, driving string ostinatos and sharp, syncopated brass stabs. The rhythm is fast and propulsive, anchored by heavy orchestral percussion including taiko drums and cinematic hits. The atmosphere is immediately tense and heroic, setting a stage for a high-stakes turn-based encounter.\n\n[0:20 - 1:00] Main Theme: Intensity: 9/10.\nThe core battle groove, characterized by a soaring, heroic melody played by unison violins and French horns. The rhythm is relentless, featuring a steady 16th-note pulse in the strings and powerful, punctuated brass accents. The orchestration is dense and epic, with piano arpeggios adding a layer of urgency. The melody is bold and memorable, designed to loop seamlessly while maintaining a feeling of constant, high-stakes action.\n\n[1:00 - 1:40] Variation: Intensity: 8/10.\nA slightly more rhythmic and percussive section that shifts focus to the low-end. The brass takes a backseat to driving, low-register string runs and heavy, rhythmic timpani rolls. The energy remains high but shifts toward a more tactical, focused feel. Subtle glockenspiel accents sparkle over the top, adding a touch of HD-2D aesthetic charm to the intensity.\n\n[1:40 - 2:00] Loop Outro: Intensity: 7/10.\nA seamless transition back to the start, stripping away the heaviest brass layers while maintaining the driving string ostinato and percussion pulse. The intensity tapers slightly to allow for a clean, natural loop back to the intro, ensuring the battle theme can repeat indefinitely without fatigue.",
+    "audio_path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+    "audio_paths": [
+      "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3"
+    ],
+    "audios": [
+      {
+        "type": "music",
+        "label": "Epic HD-2D JRPG Battle Theme",
+        "name": "Epic HD-2D JRPG Battle Theme",
+        "path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+        "content_type": "audio/mpeg",
+        "duration_seconds": 30,
+        "provider": "lyria"
+      }
+    ],
+    "url": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+    "gcs_url": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic%20HD-2D%20JRPG%20Battle%20Theme.mp3",
+    "gcs_blob_name": "music-generator/output/2026-06-13/03:48:21-workflow-music_generator-09aad5d2d0a04c799b10a42e/Epic HD-2D JRPG Battle Theme.mp3",
+    "gcs_run_prefix": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:21-workflow-music_generator-09aad5d2d0a04c799b10a42e/",
+    "storage": "gcs"
+  },
+  "error": "",
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "workflow-music_generator-09aad5d2d0a04c799b10a42e"
+  }
+}

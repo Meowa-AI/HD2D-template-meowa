@@ -1,0 +1,33 @@
+{
+  "api_job_id": "d5e2feab-ca16-48fe-a102-9dcdc00f50ae",
+  "status": "success",
+  "error": "",
+  "output": {
+    "url": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A49-d5e2feab-ca16-48fe-a102-9dcdc00f50ae/sprite_00.png",
+    "final_sprite_paths": [
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A49-d5e2feab-ca16-48fe-a102-9dcdc00f50ae/sprite_00.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A49-d5e2feab-ca16-48fe-a102-9dcdc00f50ae/sprite_01.png"
+    ],
+    "prompt_detail": "正面全身像，短棕发少年剑士，身穿蓝色旅行短袍与棕色皮革护甲，腰间佩戴一把剑鞘完整的长剑，姿态挺拔；正面全身像，长紫发女性法师，身穿深色长袍，袍面布满明亮的星形几何纹样，手持一根顶端镶嵌晶体的木质法杖，姿态优雅。",
+    "sprite_pack_names": [
+      "剑士",
+      "法师"
+    ],
+    "sprite_crop_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A49-d5e2feab-ca16-48fe-a102-9dcdc00f50ae/sprite_00.png",
+    "sprite_pack_preview_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A49-d5e2feab-ca16-48fe-a102-9dcdc00f50ae/sprite_pack_preview.png"
+  },
+  "stage": "completed",
+  "progress": {
+    "percent": 100,
+    "label": "已完成"
+  },
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "d5e2feab-ca16-48fe-a102-9dcdc00f50ae"
+  }
+}

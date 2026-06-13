@@ -1,0 +1,116 @@
+{
+  "job_id": "workflow-music_generator-262fd54493814173a4d4163d",
+  "job_type": "workflow",
+  "status": "success",
+  "stage": "completed",
+  "animation_type": null,
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "progress": {
+    "label": "已完成",
+    "percent": 100
+  },
+  "result": {
+    "job_name": "034806_default_peaceful_HD_2D_JRPG_overworld_theme_gentle_flute_harp_warm_strin",
+    "run_dir": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:17-workflow-music_generator-262fd54493814173a4d4163d/",
+    "metadata_path": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:17-workflow-music_generator-262fd54493814173a4d4163d/metadata.json",
+    "metadata": {
+      "run_dir": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:17-workflow-music_generator-262fd54493814173a4d4163d/",
+      "raw_prompt": "peaceful HD-2D JRPG overworld theme, gentle flute, harp, warm strings, pastoral, loop-friendly",
+      "name": "Pastoral HD-2D Overworld Theme",
+      "summary": "A 2-minute peaceful HD-2D JRPG overworld theme in D major at 95 BPM in 4/4, featuring gentle flute, delicate harp arpeggios, and warm, swelling strings. Instrumental only, no vocals.",
+      "timestamps_detail": "[0:00 - 0:30] Intro: Intensity: 2/10.\nA gentle, atmospheric opening defined by soft, cascading harp arpeggios and a light, sustained string pad in D major. The mood is pastoral and expansive, evoking a wide, sunlit landscape. The rhythm is free-flowing and rubato, creating a sense of wonder and calm.\n\n[0:30 - 1:15] Main Theme: Intensity: 4/10.\nThe main melody enters, played by a breathy, expressive flute that carries a nostalgic and hopeful tune. The orchestration builds with warm, legato cello and viola lines providing a rich, grounding foundation. A light, rhythmic pulse is introduced by subtle, plucked pizzicato strings and delicate harp notes, establishing a steady, walking pace suitable for exploration. The atmosphere is serene, classic, and inviting.\n\n[1:15 - 1:45] Variation: Intensity: 4/10.\nThe theme continues with a slight variation, introducing a soft, high-register violin counter-melody that weaves around the flute. The string section swells slightly, adding depth and emotional resonance to the pastoral landscape. The harp remains the constant, providing a shimmering, crystalline texture that ties the arrangement together.\n\n[1:45 - 2:00] Loop Outro: Intensity: 2/10.\nThe arrangement gently thins out, removing the violin and flute melodies. The music returns to the soft, rhythmic harp arpeggios and the warm, sustained string pads from the intro. The intensity fades back to a quiet, open state, allowing for a seamless, natural loop back to the beginning.",
+      "duration_seconds": 180,
+      "loop": true,
+      "audio_generate": true,
+      "demo": true,
+      "provider": "lyria",
+      "generation_mode": "music_audio",
+      "prepare_only": false,
+      "audio_path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+      "audio_paths": [
+        "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3"
+      ],
+      "audios": [
+        {
+          "type": "music",
+          "label": "Pastoral HD-2D Overworld Theme",
+          "name": "Pastoral HD-2D Overworld Theme",
+          "path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+          "content_type": "audio/mpeg",
+          "duration_seconds": 30,
+          "provider": "lyria"
+        }
+      ],
+      "content_type": "audio/mpeg",
+      "audio_bytes": 744609,
+      "model": "lyria-3-clip-preview",
+      "request_id": "-NIsarbGLKjNg8UP9uaRkA4",
+      "elapsed_seconds": 8.826,
+      "reference_image_paths": [],
+      "reference_image_count": 0,
+      "prompt_result": {
+        "raw_prompt": "peaceful HD-2D JRPG overworld theme, gentle flute, harp, warm strings, pastoral, loop-friendly",
+        "name": "Pastoral HD-2D Overworld Theme",
+        "summary": "A 2-minute peaceful HD-2D JRPG overworld theme in D major at 95 BPM in 4/4, featuring gentle flute, delicate harp arpeggios, and warm, swelling strings. Instrumental only, no vocals.",
+        "timestamps_detail": "[0:00 - 0:30] Intro: Intensity: 2/10.\nA gentle, atmospheric opening defined by soft, cascading harp arpeggios and a light, sustained string pad in D major. The mood is pastoral and expansive, evoking a wide, sunlit landscape. The rhythm is free-flowing and rubato, creating a sense of wonder and calm.\n\n[0:30 - 1:15] Main Theme: Intensity: 4/10.\nThe main melody enters, played by a breathy, expressive flute that carries a nostalgic and hopeful tune. The orchestration builds with warm, legato cello and viola lines providing a rich, grounding foundation. A light, rhythmic pulse is introduced by subtle, plucked pizzicato strings and delicate harp notes, establishing a steady, walking pace suitable for exploration. The atmosphere is serene, classic, and inviting.\n\n[1:15 - 1:45] Variation: Intensity: 4/10.\nThe theme continues with a slight variation, introducing a soft, high-register violin counter-melody that weaves around the flute. The string section swells slightly, adding depth and emotional resonance to the pastoral landscape. The harp remains the constant, providing a shimmering, crystalline texture that ties the arrangement together.\n\n[1:45 - 2:00] Loop Outro: Intensity: 2/10.\nThe arrangement gently thins out, removing the violin and flute melodies. The music returns to the soft, rhythmic harp arpeggios and the warm, sustained string pads from the intro. The intensity fades back to a quiet, open state, allowing for a seamless, natural loop back to the beginning.",
+        "reference_image_count": 0,
+        "runner": {
+          "success": true,
+          "fallback_used": false,
+          "attempts": [
+            {
+              "attempt": 1,
+              "ok": true,
+              "tool_called": true
+            }
+          ],
+          "error": "",
+          "tool_args": {
+            "summary": "A 2-minute peaceful HD-2D JRPG overworld theme in D major at 95 BPM in 4/4, featuring gentle flute, delicate harp arpeggios, and warm, swelling strings. Instrumental only, no vocals.",
+            "timestamps_detail": "[0:00 - 0:30] Intro: Intensity: 2/10.\nA gentle, atmospheric opening defined by soft, cascading harp arpeggios and a light, sustained string pad in D major. The mood is pastoral and expansive, evoking a wide, sunlit landscape. The rhythm is free-flowing and rubato, creating a sense of wonder and calm.\n\n[0:30 - 1:15] Main Theme: Intensity: 4/10.\nThe main melody enters, played by a breathy, expressive flute that carries a nostalgic and hopeful tune. The orchestration builds with warm, legato cello and viola lines providing a rich, grounding foundation. A light, rhythmic pulse is introduced by subtle, plucked pizzicato strings and delicate harp notes, establishing a steady, walking pace suitable for exploration. The atmosphere is serene, classic, and inviting.\n\n[1:15 - 1:45] Variation: Intensity: 4/10.\nThe theme continues with a slight variation, introducing a soft, high-register violin counter-melody that weaves around the flute. The string section swells slightly, adding depth and emotional resonance to the pastoral landscape. The harp remains the constant, providing a shimmering, crystalline texture that ties the arrangement together.\n\n[1:45 - 2:00] Loop Outro: Intensity: 2/10.\nThe arrangement gently thins out, removing the violin and flute melodies. The music returns to the soft, rhythmic harp arpeggios and the warm, sustained string pads from the intro. The intensity fades back to a quiet, open state, allowing for a seamless, natural loop back to the beginning.",
+            "name": "Pastoral HD-2D Overworld Theme"
+          }
+        }
+      },
+      "storage": "local",
+      "workflow_id": "music_generator",
+      "template_id": "default",
+      "operator_chain": [
+        "music_prompt_rewrite",
+        "music_audio_generation"
+      ]
+    },
+    "name": "Pastoral HD-2D Overworld Theme",
+    "summary": "A 2-minute peaceful HD-2D JRPG overworld theme in D major at 95 BPM in 4/4, featuring gentle flute, delicate harp arpeggios, and warm, swelling strings. Instrumental only, no vocals.",
+    "timestamps_detail": "[0:00 - 0:30] Intro: Intensity: 2/10.\nA gentle, atmospheric opening defined by soft, cascading harp arpeggios and a light, sustained string pad in D major. The mood is pastoral and expansive, evoking a wide, sunlit landscape. The rhythm is free-flowing and rubato, creating a sense of wonder and calm.\n\n[0:30 - 1:15] Main Theme: Intensity: 4/10.\nThe main melody enters, played by a breathy, expressive flute that carries a nostalgic and hopeful tune. The orchestration builds with warm, legato cello and viola lines providing a rich, grounding foundation. A light, rhythmic pulse is introduced by subtle, plucked pizzicato strings and delicate harp notes, establishing a steady, walking pace suitable for exploration. The atmosphere is serene, classic, and inviting.\n\n[1:15 - 1:45] Variation: Intensity: 4/10.\nThe theme continues with a slight variation, introducing a soft, high-register violin counter-melody that weaves around the flute. The string section swells slightly, adding depth and emotional resonance to the pastoral landscape. The harp remains the constant, providing a shimmering, crystalline texture that ties the arrangement together.\n\n[1:45 - 2:00] Loop Outro: Intensity: 2/10.\nThe arrangement gently thins out, removing the violin and flute melodies. The music returns to the soft, rhythmic harp arpeggios and the warm, sustained string pads from the intro. The intensity fades back to a quiet, open state, allowing for a seamless, natural loop back to the beginning.",
+    "audio_path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+    "audio_paths": [
+      "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3"
+    ],
+    "audios": [
+      {
+        "type": "music",
+        "label": "Pastoral HD-2D Overworld Theme",
+        "name": "Pastoral HD-2D Overworld Theme",
+        "path": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+        "content_type": "audio/mpeg",
+        "duration_seconds": 30,
+        "provider": "lyria"
+      }
+    ],
+    "url": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+    "gcs_url": "https://media.meowa.ai/public/music-generator/output/2026-06-13/03%3A48%3A17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral%20HD-2D%20Overworld%20Theme.mp3",
+    "gcs_blob_name": "music-generator/output/2026-06-13/03:48:17-workflow-music_generator-262fd54493814173a4d4163d/Pastoral HD-2D Overworld Theme.mp3",
+    "gcs_run_prefix": "https://storage.googleapis.com/meowart-bucket/music-generator/output/2026-06-13/03:48:17-workflow-music_generator-262fd54493814173a4d4163d/",
+    "storage": "gcs"
+  },
+  "error": "",
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "workflow-music_generator-262fd54493814173a4d4163d"
+  }
+}

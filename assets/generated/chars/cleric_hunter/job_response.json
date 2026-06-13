@@ -1,0 +1,33 @@
+{
+  "api_job_id": "f83019c4-d91e-4b96-b029-06ed93448986",
+  "status": "success",
+  "error": "",
+  "output": {
+    "url": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A48%3A04-f83019c4-d91e-4b96-b029-06ed93448986/sprite_00.png",
+    "final_sprite_paths": [
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A48%3A04-f83019c4-d91e-4b96-b029-06ed93448986/sprite_00.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A48%3A04-f83019c4-d91e-4b96-b029-06ed93448986/sprite_01.png"
+    ],
+    "prompt_detail": "正面全身像，金发女性牧师，身穿镶金边的纯白长袍，手持顶端镶嵌放射状星芒光核的圣职法杖；正面全身像，粗犷男性猎人，身穿深绿色连帽斗篷与棕色皮革护甲，颈部围着厚实毛皮领，背负一张长弓，腰间挂着箭袋",
+    "sprite_pack_names": [
+      "猎人",
+      "牧师"
+    ],
+    "sprite_crop_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A48%3A04-f83019c4-d91e-4b96-b029-06ed93448986/sprite_00.png",
+    "sprite_pack_preview_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A48%3A04-f83019c4-d91e-4b96-b029-06ed93448986/sprite_pack_preview.png"
+  },
+  "stage": "completed",
+  "progress": {
+    "percent": 100,
+    "label": "已完成"
+  },
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "f83019c4-d91e-4b96-b029-06ed93448986"
+  }
+}

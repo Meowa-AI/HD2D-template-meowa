@@ -1,0 +1,6 @@
+{
+  "api_job_id": "e133e8cc-f071-488c-a2dc-a87c39de639b",
+  "status": "queued",
+  "poll_interval_seconds": 3,
+  "poll_url": "https://api.meowa.ai/api/pixel-gen/jobs?id=e133e8cc-f071-488c-a2dc-a87c39de639b"
+}

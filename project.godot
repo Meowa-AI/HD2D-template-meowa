@@ -1,0 +1,36 @@
+; Engine configuration file.
+; Octopath-style HD-2D vertical slice — Godot 4.6
+
+config_version=5
+
+[application]
+
+config/name="Wanderers of Orsterra (HD-2D Slice)"
+config/description="An Octopath Traveler-style HD-2D vertical slice: explore a field, trigger an encounter, and fight a turn-based battle with the Break & Boost system."
+run/main_scene="res://scenes/Title.tscn"
+config/features=PackedStringArray("4.6", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GameData="*res://scripts/GameData.gd"
+Audio="*res://scripts/Audio.gd"
+SceneManager="*res://scripts/SceneManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="keep"
+
+[rendering]
+
+renderer/rendering_method="forward_plus"
+textures/default_filters/anisotropic_filtering_level=0
+anti_aliasing/quality/msaa_3d=2
+environment/defaults/default_clear_color=Color(0.05, 0.06, 0.09, 1)
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true

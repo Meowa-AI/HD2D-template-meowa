@@ -1,0 +1,482 @@
+{
+  "job_id": "workflow-elevenlabs_generator-c98a741ee5714945a497d6ad",
+  "job_type": "workflow",
+  "status": "success",
+  "stage": "completed",
+  "animation_type": null,
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "progress": {
+    "label": "已完成",
+    "percent": 100
+  },
+  "result": {
+    "job_name": "034818_default_JRPG_ui_and_combat_sfx_pack_cursor_move_blip_confirm_chime_cance",
+    "run_dir": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/",
+    "audio_path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+    "audio_paths": [
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/02_UI_Confirm_Chime.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/03_UI_Cancel_Back.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/04_Combat_Sword_Slash.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/05_Combat_Shield_Shatter.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/06_Combat_Heal_Sparkle.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/07_Combat_Boost_Charge.mp3",
+      "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/08_Combat_Encounter_Alert.mp3"
+    ],
+    "audios": [
+      {
+        "type": "sound_effect",
+        "label": "UI Cursor Move",
+        "name": "UI Cursor Move",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Short digital blip with a clean high-pitched tone for menu navigation.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/01_UI_Cursor_Move.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "UI Confirm Chime",
+        "name": "UI Confirm Chime",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/02_UI_Confirm_Chime.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Bright and pleasant melodic chime indicating a successful menu selection.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/02_UI_Confirm_Chime.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "UI Cancel Back",
+        "name": "UI Cancel Back",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/03_UI_Cancel_Back.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Soft muted low-frequency thud for canceling or going back in menus.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/03_UI_Cancel_Back.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "Combat Sword Slash",
+        "name": "Combat Sword Slash",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/04_Combat_Sword_Slash.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Sharp metallic sword slash with a quick high-frequency air whoosh.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/04_Combat_Sword_Slash.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "Combat Shield Shatter",
+        "name": "Combat Shield Shatter",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/05_Combat_Shield_Shatter.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Brittle glass-like shattering sound with heavy debris impact.",
+        "loop": false,
+        "duration_seconds": 2,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/05_Combat_Shield_Shatter.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "Combat Heal Sparkle",
+        "name": "Combat Heal Sparkle",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/06_Combat_Heal_Sparkle.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Magical shimmering sound with a light ascending bell-like sparkle.",
+        "loop": false,
+        "duration_seconds": 2,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/06_Combat_Heal_Sparkle.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "Combat Boost Charge",
+        "name": "Combat Boost Charge",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/07_Combat_Boost_Charge.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Rising electric hum with a crackling energy buildup effect.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/07_Combat_Boost_Charge.mp3"
+      },
+      {
+        "type": "sound_effect",
+        "label": "Combat Encounter Alert",
+        "name": "Combat Encounter Alert",
+        "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/08_Combat_Encounter_Alert.mp3",
+        "content_type": "audio/mpeg",
+        "prompt": "Sharp alarming electronic pulse with a sudden high-frequency spike.",
+        "loop": false,
+        "duration_seconds": 1,
+        "normalized": true,
+        "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/08_Combat_Encounter_Alert.mp3"
+      }
+    ],
+    "metadata_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/metadata.json",
+    "metadata": {
+      "run_dir": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/",
+      "prompt": "JRPG ui and combat sfx pack: cursor move blip, confirm chime, cancel back, sword slash hit, shield break shatter, heal sparkle, boost charge, encounter alert",
+      "raw_prompt": "JRPG ui and combat sfx pack: cursor move blip, confirm chime, cancel back, sword slash hit, shield break shatter, heal sparkle, boost charge, encounter alert",
+      "final_prompt": "JRPG ui and combat sfx pack: cursor move blip, confirm chime, cancel back, sword slash hit, shield break shatter, heal sparkle, boost charge, encounter alert",
+      "duration": 1,
+      "loop": false,
+      "sound_pack": true,
+      "variants": false,
+      "generation_mode": "sound_pack",
+      "count": 8,
+      "language": "en",
+      "temperature": 0.3,
+      "prompt_influence": 0.3,
+      "normalize_volume": true,
+      "target_peak_db": -3.0,
+      "max_gain_db": 36.0,
+      "provider": "elevenlabs",
+      "base_url": "https://api.elevenlabs.io",
+      "prepare_only": false,
+      "audio_path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+      "audio_paths": [
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/02_UI_Confirm_Chime.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/03_UI_Cancel_Back.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/04_Combat_Sword_Slash.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/05_Combat_Shield_Shatter.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/06_Combat_Heal_Sparkle.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/07_Combat_Boost_Charge.mp3",
+        "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/08_Combat_Encounter_Alert.mp3"
+      ],
+      "content_type": "audio/mpeg",
+      "audio_bytes": 169196,
+      "character_cost": 240.0,
+      "request_id": null,
+      "elapsed_seconds": 1.92,
+      "prompt_result": {
+        "raw_prompt": "JRPG ui and combat sfx pack: cursor move blip, confirm chime, cancel back, sword slash hit, shield break shatter, heal sparkle, boost charge, encounter alert",
+        "items": [
+          {
+            "name": "UI Cursor Move",
+            "description": "Short digital blip with a clean high-pitched tone for menu navigation.",
+            "loop": false,
+            "duration_seconds": 1
+          },
+          {
+            "name": "UI Confirm Chime",
+            "description": "Bright and pleasant melodic chime indicating a successful menu selection.",
+            "loop": false,
+            "duration_seconds": 1
+          },
+          {
+            "name": "UI Cancel Back",
+            "description": "Soft muted low-frequency thud for canceling or going back in menus.",
+            "loop": false,
+            "duration_seconds": 1
+          },
+          {
+            "name": "Combat Sword Slash",
+            "description": "Sharp metallic sword slash with a quick high-frequency air whoosh.",
+            "loop": false,
+            "duration_seconds": 1
+          },
+          {
+            "name": "Combat Shield Shatter",
+            "description": "Brittle glass-like shattering sound with heavy debris impact.",
+            "loop": false,
+            "duration_seconds": 2
+          },
+          {
+            "name": "Combat Heal Sparkle",
+            "description": "Magical shimmering sound with a light ascending bell-like sparkle.",
+            "loop": false,
+            "duration_seconds": 2
+          },
+          {
+            "name": "Combat Boost Charge",
+            "description": "Rising electric hum with a crackling energy buildup effect.",
+            "loop": false,
+            "duration_seconds": 1
+          },
+          {
+            "name": "Combat Encounter Alert",
+            "description": "Sharp alarming electronic pulse with a sudden high-frequency spike.",
+            "loop": false,
+            "duration_seconds": 1
+          }
+        ],
+        "runner": {
+          "success": true,
+          "fallback_used": false,
+          "attempts": [
+            {
+              "attempt": 1,
+              "ok": true,
+              "tool_called": true
+            }
+          ],
+          "error": "",
+          "tool_args": {
+            "items": [
+              {
+                "name": "UI Cursor Move",
+                "description": "Short digital blip with a clean high-pitched tone for menu navigation.",
+                "loop": false,
+                "duration_seconds": 1
+              },
+              {
+                "name": "UI Confirm Chime",
+                "description": "Bright and pleasant melodic chime indicating a successful menu selection.",
+                "loop": false,
+                "duration_seconds": 1
+              },
+              {
+                "description": "Soft muted low-frequency thud for canceling or going back in menus.",
+                "name": "UI Cancel Back",
+                "loop": false,
+                "duration_seconds": 1
+              },
+              {
+                "name": "Combat Sword Slash",
+                "description": "Sharp metallic sword slash with a quick high-frequency air whoosh.",
+                "duration_seconds": 1,
+                "loop": false
+              },
+              {
+                "description": "Brittle glass-like shattering sound with heavy debris impact.",
+                "name": "Combat Shield Shatter",
+                "duration_seconds": 1,
+                "loop": false
+              },
+              {
+                "duration_seconds": 1,
+                "loop": false,
+                "description": "Magical shimmering sound with a light ascending bell-like sparkle.",
+                "name": "Combat Heal Sparkle"
+              },
+              {
+                "loop": false,
+                "duration_seconds": 1,
+                "name": "Combat Boost Charge",
+                "description": "Rising electric hum with a crackling energy buildup effect."
+              },
+              {
+                "description": "Sharp alarming electronic pulse with a sudden high-frequency spike.",
+                "name": "Combat Encounter Alert",
+                "duration_seconds": 1,
+                "loop": false
+              }
+            ]
+          }
+        },
+        "name_translation": {
+          "language": "en",
+          "names": [
+            "UI Cursor Move",
+            "UI Confirm Chime",
+            "UI Cancel Back",
+            "Combat Sword Slash",
+            "Combat Shield Shatter",
+            "Combat Heal Sparkle",
+            "Combat Boost Charge",
+            "Combat Encounter Alert"
+          ],
+          "translated": false,
+          "runner": null
+        }
+      },
+      "items": [
+        {
+          "index": 1,
+          "name": "UI Cursor Move",
+          "slug": "01_UI_Cursor_Move",
+          "prompt": "Short digital blip with a clean high-pitched tone for menu navigation.",
+          "loop": false,
+          "duration_seconds": 1
+        },
+        {
+          "index": 2,
+          "name": "UI Confirm Chime",
+          "slug": "02_UI_Confirm_Chime",
+          "prompt": "Bright and pleasant melodic chime indicating a successful menu selection.",
+          "loop": false,
+          "duration_seconds": 1
+        },
+        {
+          "index": 3,
+          "name": "UI Cancel Back",
+          "slug": "03_UI_Cancel_Back",
+          "prompt": "Soft muted low-frequency thud for canceling or going back in menus.",
+          "loop": false,
+          "duration_seconds": 1
+        },
+        {
+          "index": 4,
+          "name": "Combat Sword Slash",
+          "slug": "04_Combat_Sword_Slash",
+          "prompt": "Sharp metallic sword slash with a quick high-frequency air whoosh.",
+          "loop": false,
+          "duration_seconds": 1
+        },
+        {
+          "index": 5,
+          "name": "Combat Shield Shatter",
+          "slug": "05_Combat_Shield_Shatter",
+          "prompt": "Brittle glass-like shattering sound with heavy debris impact.",
+          "loop": false,
+          "duration_seconds": 2
+        },
+        {
+          "index": 6,
+          "name": "Combat Heal Sparkle",
+          "slug": "06_Combat_Heal_Sparkle",
+          "prompt": "Magical shimmering sound with a light ascending bell-like sparkle.",
+          "loop": false,
+          "duration_seconds": 2
+        },
+        {
+          "index": 7,
+          "name": "Combat Boost Charge",
+          "slug": "07_Combat_Boost_Charge",
+          "prompt": "Rising electric hum with a crackling energy buildup effect.",
+          "loop": false,
+          "duration_seconds": 1
+        },
+        {
+          "index": 8,
+          "name": "Combat Encounter Alert",
+          "slug": "08_Combat_Encounter_Alert",
+          "prompt": "Sharp alarming electronic pulse with a sudden high-frequency spike.",
+          "loop": false,
+          "duration_seconds": 1
+        }
+      ],
+      "elevenlabs_sound_report_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/elevenlabs_sound_report.json",
+      "audios": [
+        {
+          "type": "sound_effect",
+          "label": "UI Cursor Move",
+          "name": "UI Cursor Move",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Short digital blip with a clean high-pitched tone for menu navigation.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/01_UI_Cursor_Move.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "UI Confirm Chime",
+          "name": "UI Confirm Chime",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/02_UI_Confirm_Chime.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Bright and pleasant melodic chime indicating a successful menu selection.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/02_UI_Confirm_Chime.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "UI Cancel Back",
+          "name": "UI Cancel Back",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/03_UI_Cancel_Back.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Soft muted low-frequency thud for canceling or going back in menus.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/03_UI_Cancel_Back.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "Combat Sword Slash",
+          "name": "Combat Sword Slash",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/04_Combat_Sword_Slash.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Sharp metallic sword slash with a quick high-frequency air whoosh.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/04_Combat_Sword_Slash.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "Combat Shield Shatter",
+          "name": "Combat Shield Shatter",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/05_Combat_Shield_Shatter.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Brittle glass-like shattering sound with heavy debris impact.",
+          "loop": false,
+          "duration_seconds": 2,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/05_Combat_Shield_Shatter.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "Combat Heal Sparkle",
+          "name": "Combat Heal Sparkle",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/06_Combat_Heal_Sparkle.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Magical shimmering sound with a light ascending bell-like sparkle.",
+          "loop": false,
+          "duration_seconds": 2,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/06_Combat_Heal_Sparkle.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "Combat Boost Charge",
+          "name": "Combat Boost Charge",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/07_Combat_Boost_Charge.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Rising electric hum with a crackling energy buildup effect.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/07_Combat_Boost_Charge.mp3"
+        },
+        {
+          "type": "sound_effect",
+          "label": "Combat Encounter Alert",
+          "name": "Combat Encounter Alert",
+          "path": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/08_Combat_Encounter_Alert.mp3",
+          "content_type": "audio/mpeg",
+          "prompt": "Sharp alarming electronic pulse with a sudden high-frequency spike.",
+          "loop": false,
+          "duration_seconds": 1,
+          "normalized": true,
+          "raw_path": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/steps/raw_audio/08_Combat_Encounter_Alert.mp3"
+        }
+      ],
+      "storage": "local",
+      "workflow_id": "elevenlabs_generator",
+      "template_id": "default",
+      "operator_chain": [
+        "prompt_rewrite",
+        "elevenlabs_sound_generation"
+      ]
+    },
+    "character_cost": 240.0,
+    "url": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+    "gcs_url": "https://media.meowa.ai/public/elevenlabs-generator/output/2026-06-13/03%3A48%3A37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+    "gcs_blob_name": "elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/01_UI_Cursor_Move.mp3",
+    "gcs_run_prefix": "https://storage.googleapis.com/meowart-bucket/elevenlabs-generator/output/2026-06-13/03:48:37-workflow-elevenlabs_generator-c98a741ee5714945a497d6ad/",
+    "storage": "gcs"
+  },
+  "error": "",
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "workflow-elevenlabs_generator-c98a741ee5714945a497d6ad"
+  }
+}

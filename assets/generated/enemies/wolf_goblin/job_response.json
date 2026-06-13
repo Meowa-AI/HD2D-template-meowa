@@ -1,0 +1,33 @@
+{
+  "api_job_id": "e133e8cc-f071-488c-a2dc-a87c39de639b",
+  "status": "success",
+  "error": "",
+  "output": {
+    "url": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A58-e133e8cc-f071-488c-a2dc-a87c39de639b/sprite_00.png",
+    "final_sprite_paths": [
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A58-e133e8cc-f071-488c-a2dc-a87c39de639b/sprite_00.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A58-e133e8cc-f071-488c-a2dc-a87c39de639b/sprite_01.png"
+    ],
+    "prompt_detail": "正面全身像，灰色恐狼，毛发倒竖，双眼闪烁红色星芒，处于低姿态扑击状，利齿外露；正面全身像，绿色皮肤哥布林强盗，身穿拼凑的破旧皮革护甲，手持一把锈迹斑斑的弯曲匕首，腰间挂着粗糙的麻布袋，眼神狡黠",
+    "sprite_pack_names": [
+      "恐狼",
+      "哥布林强盗"
+    ],
+    "sprite_crop_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A58-e133e8cc-f071-488c-a2dc-a87c39de639b/sprite_00.png",
+    "sprite_pack_preview_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A47%3A58-e133e8cc-f071-488c-a2dc-a87c39de639b/sprite_pack_preview.png"
+  },
+  "stage": "completed",
+  "progress": {
+    "percent": 100,
+    "label": "已完成"
+  },
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "e133e8cc-f071-488c-a2dc-a87c39de639b"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "api_job_id": "5c16bca2-3492-4b70-9855-d2b114ffd3fc",
+  "status": "success",
+  "error": "",
+  "output": {
+    "url": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A57%3A20-5c16bca2-3492-4b70-9855-d2b114ffd3fc/sprite_00.png",
+    "final_sprite_paths": [
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A57%3A20-5c16bca2-3492-4b70-9855-d2b114ffd3fc/sprite_00.png",
+      "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A57%3A20-5c16bca2-3492-4b70-9855-d2b114ffd3fc/sprite_01.png"
+    ],
+    "prompt_detail": "正面全身像，年迈的村长，留着长白胡须，身穿深棕色粗布长袍，手持一根顶端缠绕藤蔓的木制手杖；正面全身像，开朗的女性商人，系着带有口袋的亚麻围裙，怀中抱着一个装满彩色果实与布匹的编织篮，面带微笑",
+    "sprite_pack_names": [
+      "年迈村长",
+      "女性商人"
+    ],
+    "sprite_crop_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A57%3A20-5c16bca2-3492-4b70-9855-d2b114ffd3fc/sprite_00.png",
+    "sprite_pack_preview_path": "https://media.meowa.ai/public/pixel-gen/output/2026-06-13/03%3A57%3A20-5c16bca2-3492-4b70-9855-d2b114ffd3fc/sprite_pack_preview.png"
+  },
+  "stage": "completed",
+  "progress": {
+    "percent": 100,
+    "label": "已完成"
+  },
+  "queue": {
+    "position": 0,
+    "estimated_wait_seconds": 0
+  },
+  "credit_refund": {
+    "refunded": false,
+    "amount": 0,
+    "reference_id": "5c16bca2-3492-4b70-9855-d2b114ffd3fc"
+  }
+}
