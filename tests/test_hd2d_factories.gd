@@ -39,8 +39,8 @@ func _initialize() -> void:
 	var b := Env.environment("battle")
 	_eq(b.background_mode, Environment.BG_COLOR, "battle.bg")
 	_eq(b.ambient_light_source, Environment.AMBIENT_SOURCE_COLOR, "battle.ambient_src")
-	_eq(b.glow_intensity, 0.5, "battle.glow_intensity")
-	_eq(b.adjustment_saturation, 1.12, "battle.saturation")
+	_eq(b.glow_intensity, 0.55, "battle.glow_intensity")
+	_eq(b.adjustment_saturation, 1.22, "battle.saturation")
 	_eq(b.fog_enabled, false, "battle.fog_off")
 
 	var unknown := Env.environment("bogus")
@@ -61,7 +61,7 @@ func _initialize() -> void:
 	var bc := Stage.make_camera("battle")
 	_eq(bc.fov, 42.0, "battle.cam.fov")
 	_eq((bc.attributes as CameraAttributesPractical).dof_blur_near_enabled, false, "battle.cam.no_near_dof")
-	_eq((bc.attributes as CameraAttributesPractical).dof_blur_amount, 0.06, "battle.cam.dof_amount")
+	_eq((bc.attributes as CameraAttributesPractical).dof_blur_amount, 0.12, "battle.cam.dof_amount")
 
 	print("RESULT: %s" % ("PASS" if _fail == 0 else "FAIL (%d)" % _fail))
 	quit(_fail)

@@ -30,7 +30,7 @@ static func apply_dof(cam: Camera3D, profile: String = "field") -> void:
 			attr.dof_blur_far_enabled = true
 			attr.dof_blur_far_distance = 19.0
 			attr.dof_blur_far_transition = 6.0
-			attr.dof_blur_amount = 0.06
+			attr.dof_blur_amount = 0.12
 		_:
 			attr.dof_blur_far_enabled = true
 			attr.dof_blur_far_distance = 26.0

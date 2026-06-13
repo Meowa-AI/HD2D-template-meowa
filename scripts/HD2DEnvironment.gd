@@ -16,12 +16,13 @@ static func environment(profile: String = "field") -> Environment:
 			env.ambient_light_energy = 1.1
 			env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 			env.glow_enabled = true
-			env.glow_intensity = 0.5
-			env.glow_bloom = 0.15
+			env.glow_intensity = 0.55
+			env.glow_bloom = 0.18
 			env.glow_blend_mode = Environment.GLOW_BLEND_MODE_SOFTLIGHT
+			env.glow_hdr_threshold = 1.0
 			env.adjustment_enabled = true
-			env.adjustment_saturation = 1.12
-			env.adjustment_contrast = 1.05
+			env.adjustment_saturation = 1.22
+			env.adjustment_contrast = 1.12
 			env.fog_enabled = false  # explicit: battle has no volumetric fog
 		_:
 			env.background_mode = Environment.BG_SKY
