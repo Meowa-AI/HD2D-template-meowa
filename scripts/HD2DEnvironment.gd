@@ -3,6 +3,8 @@ extends RefCounted
 ## Returns the Environment resource ONLY — the caller wraps it in a
 ## WorldEnvironment and adds it to the tree.
 
+## Returns a configured Environment for the given profile ("field" or "battle").
+## Unknown profiles fall back to "field".
 static func environment(profile: String = "field") -> Environment:
 	var env := Environment.new()
 	match profile:
@@ -20,6 +22,7 @@ static func environment(profile: String = "field") -> Environment:
 			env.adjustment_enabled = true
 			env.adjustment_saturation = 1.12
 			env.adjustment_contrast = 1.05
+			env.fog_enabled = false  # explicit: battle has no volumetric fog
 		_:
 			env.background_mode = Environment.BG_SKY
 			var sky := Sky.new()

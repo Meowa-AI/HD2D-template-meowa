@@ -39,5 +39,8 @@ func _initialize() -> void:
 	_eq(b.adjustment_saturation, 1.12, "battle.saturation")
 	_eq(b.fog_enabled, false, "battle.fog_off")
 
+	var unknown := Env.environment("bogus")
+	_eq(unknown.background_mode, Environment.BG_SKY, "unknown.falls_back_to_field")
+
 	print("RESULT: %s" % ("PASS" if _fail == 0 else "FAIL (%d)" % _fail))
 	quit(_fail)
