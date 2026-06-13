@@ -3,7 +3,7 @@ extends RefCounted
 ## Blades don't move via the particle system (zero velocity) — all motion is the
 ## sway shader. Registers the material with WeatherSystem so wind drives it.
 
-static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9) -> GPUParticles3D:
+static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, pond_center: Vector2 = Vector2(9999, 9999), pond_radius: float = 0.0) -> GPUParticles3D:
 	var p := GPUParticles3D.new()
 	p.amount = count
 	p.lifetime = 1000.0
@@ -33,6 +33,8 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9) 
 	smat.shader = load("res://shaders/grass_blade.gdshader")
 	smat.set_shader_parameter("tex", load("res://assets/textures/grass_blade.png"))
 	smat.set_shader_parameter("blade_height", blade_h)
+	smat.set_shader_parameter("pond_center", pond_center)
+	smat.set_shader_parameter("pond_radius", pond_radius)
 	qm.material = smat
 	p.draw_pass_1 = qm
 

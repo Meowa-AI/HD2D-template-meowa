@@ -11,10 +11,17 @@ const RISE := 3.4       # vertical height per terrace
 const MAX_TIER := 3
 const TILE_UV := 1.0 / 6.0   # texture repeats per world unit (matches ground feel)
 
+# A sunken pond carved into the meadow.
+const POND := Vector2(-9.0, -8.0)
+const POND_R := 5.5
+const POND_Y := -1.4
+
 # Stepped terraces that rise to the NORTH (-z, ahead of the camera) and the
 # sides (|x|), but leave the SOUTH (+z, behind the camera) open and flat so the
 # camera looks into the terraced landscape over open ground.
 static func height_at(x: float, z: float) -> float:
+	if Vector2(x, z).distance_to(POND) < POND_R:
+		return POND_Y                   # sunken flat pond bottom
 	var north: float = -z - FLAT        # distance past the flat edge to the north
 	var side: float = absf(x) - FLAT    # distance past the flat edge to a side
 	var d: float = maxf(north, side)
@@ -74,6 +81,26 @@ static func build(half: float, grass_tex: String, cliff_tex: String) -> Node3D:
 	root.add_child(body)
 
 	return root
+
+# Stylized water surface filling the sunken pond.
+static func water() -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var pm := PlaneMesh.new()
+	pm.size = Vector2(POND_R * 2.05, POND_R * 2.05)
+	pm.subdivide_width = 14
+	pm.subdivide_depth = 14
+	mi.mesh = pm
+	var mat := ShaderMaterial.new()
+	mat.shader = load("res://shaders/water.gdshader")
+	pm.material = mat
+	mi.position = Vector3(POND.x, -0.25, POND.y)
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var ml := Engine.get_main_loop()
+	if ml is SceneTree:
+		var ws = (ml as SceneTree).root.get_node_or_null("WeatherSystem")
+		if ws != null:
+			ws.register(mat)
+	return mi
 
 static func _add_top(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, y: float) -> void:
 	var p00 := Vector3(x0, y, z0)

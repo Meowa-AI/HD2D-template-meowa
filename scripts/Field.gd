@@ -38,7 +38,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_light()
 	_build_ground()
-	add_child(GrassField.build(TieredTerrain.FLAT * 2.0))  # grass blanket over the flat meadow
+	add_child(GrassField.build(TieredTerrain.FLAT * 2.0, 24000, 0.9, TieredTerrain.POND, TieredTerrain.POND_R + 0.5))  # grass blanket (excludes the pond)
 	var clouds := CloudShadowsScene.new()
 	clouds.setup(GROUND_SIZE * 0.5)
 	add_child(clouds)
@@ -67,6 +67,7 @@ func _build_ground() -> void:
 	# CB-style tiered terrain: flat meadow ringed by rising grass terraces with
 	# dirt cliff faces. Replaces the old flat plane.
 	add_child(TieredTerrain.build(GROUND_SIZE * 0.5, "res://assets/textures/grass.png", "res://assets/textures/cliff.png"))
+	add_child(TieredTerrain.water())
 
 	# A winding dirt path on the flat meadow: a few overlapping strips.
 	var path_points := [Vector3(-26, 0, 18), Vector3(-8, 0, 6), Vector3(4, 0, -4), Vector3(18, 0, -18)]
