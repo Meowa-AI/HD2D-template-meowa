@@ -1,125 +1,134 @@
-# HD-2D Rendering Foundation — Design
+# HD-2D Rendering Foundation — Design (v2)
 
 **Date:** 2026-06-13
-**Status:** Draft (awaiting review)
-**Goal:** Make the game's art reach OCTOPATH TRAVELER ("HD-2D") quality, starting from the rendering pipeline.
+**Status:** Draft v2 (awaiting review)
+**Goal:** Raise the game's art to OCTOPATH TRAVELER ("HD-2D") quality by aligning asset pixel density and elevating + centralizing the existing render rig.
 
-## Problem & Reframe
+> v2 supersedes v1. v1 assumed an empty project and a from-scratch Field stub. That was based on a stale snapshot — the project was being built by another process concurrently. This version is grounded in the **actual current code**.
 
-The look people call "OCTOPATH-level" is **not** primarily about more detailed sprites. It is a *rendering technique*: ordinary 2D pixel sprites placed inside a real 3D diorama, then transformed by lighting, depth-of-field, bloom, atmospheric fog, and color grading.
+## Corrected Current State (verified against code)
 
-Current project state:
-- Godot 4.6 stable, Forward+ renderer.
-- Asset library exists: 256×256 pixel character sprites (good quality), 64×64 tileable terrain, a 2752×1536 background image, SFX/BGM.
-- `scripts/HD2D.gd` has helpers for billboarded `Sprite3D` characters, blob shadows, and a tiled ground plane.
-- Autoloads exist: `GameData`, `Audio`, `SceneManager` (the latter points at `res://scenes/Field.tscn`).
-- **No scene files exist yet** — `scenes/` is empty; the game does not run.
+The vertical slice **already exists and runs**: `Title.tscn → Field.tscn → Battle.tscn`, with autoloads `GameData` / `Audio` / `SceneManager`.
 
-So the biggest gap is the **render stack**, and the first concrete deliverable is a **runnable Field scene** that establishes that stack. The existing sprites are reused as-is.
+- `scripts/Field.gd` already builds a full HD-2D scene **inline**: environment (`_build_environment`, lines 45–82: BG_SKY procedural sky, FILMIC tonemap exp 1.05, glow 0.45 / bloom 0.18 / softlight / HDR thr 0.95, fog density 0.005 + aerial 0.3, adjustments contrast 1.08 / saturation 1.18), a shadow-casting sun (`_build_light`, 84–91), ground + winding path, ~80 perimeter trees + props + NPCs, grass encounter zones, dialogue UI, and a **DOF follow-camera** (`_build_camera`, 278–293: fov 46, `CameraAttributesPractical` near+far blur, amount 0.08).
+- `scripts/Player.gd` already has movement, facing-flip, and a fake walk-bob.
+- `scripts/Battle.gd` (32 KB) and `scripts/Title.gd` exist and are wired (`Field.gd:421-422` transitions to `Battle.tscn`; `project.godot` main scene is `Title.tscn`).
+- `scripts/SceneManager.gd:22-34` already has an **offscreen screenshot hook**: env `SHOT_OUT` (+ optional `SHOT_FRAMES`) captures a frame to PNG and quits. This is the visual-verification path.
+- Assets now include `assets/sprites/props/*` (trees, bush, rock, barrel, crate, fence, lamp, well, signpost, chest), `npc_elder/merchant`, plus the party + enemies.
+
+So this is **not greenfield**. The work is three things on existing code:
+1. **Align asset pixel density** to OCTOPATH (assets are full-detail, not chunky, and inconsistent across classes).
+2. **Extract the inline rig** into shared reusable units so Field and Battle share one tuned look (no parallel rig).
+3. **Elevate that look** to OCTOPATH grade, verifying via the existing `SHOT_OUT` hook.
 
 ## Goals
 
-1. Establish a complete, reusable HD-2D render rig (environment + camera + lighting) as the project's rendering foundation.
-2. Deliver one runnable `Field.tscn` exploration scene that showcases the look using existing assets.
-3. Validate visually by rendering with the Godot binary and screenshotting, iterating until it reads as "HD-2D".
+1. Field (primary showcase) reads as OCTOPATH-grade HD-2D.
+2. The render rig (environment grade, lighting, DOF camera, atmosphere) lives in shared factories that both Field and Battle consume.
+3. Character/prop assets share one OCTOPATH-aligned pixel density.
+4. Title → Field → Battle all still run end-to-end after the changes.
 
-## Non-Goals (for this spec)
+## Non-Goals
 
-- Gameplay (movement, encounters, battle logic). The scene may have a stub player but combat/exploration mechanics are out of scope.
-- Full asset library regeneration. Only the 4 party sprites (and enemy approach) are brought to standard now; environment art, props, and additional characters are a later pass.
-- The Battle scene (will inherit this rig in a later spec).
-- Title screen.
+- Gameplay changes (movement, encounter rules, dialogue, battle combat logic/layout). Battle **inherits the shared rig's params** but its combat is not redesigned here.
+- Full asset-library regeneration. In scope now: the 4 party sprites + a density policy applied to props/NPCs/enemies. Net-new environment art is later.
+- Title screen redesign (must keep working; not a polish target).
 
 ## Target Look — Decomposition
 
-| Layer | OCTOPATH signature | Godot 4.6 mechanism |
-|---|---|---|
-| Depth of field | tilt-shift "miniature" — near/far blur, sharp midground | `CameraAttributesPractical` DOF near+far |
-| Camera | telephoto compression, fixed ¾ down-angle | low FOV (~28°), pitch ~50° |
-| Bloom | strong, near-overexposed highlight glow | `Environment` glow, multi-level, HDR threshold ~0.95 |
-| Tonemap & grading | high saturation, filmic contrast | `Environment` tonemap ACES + adjustments (saturation ~1.25) |
-| Atmosphere | depth fog, god rays, dust motes | `Environment` fog + `GPUParticles3D` |
-| Lighting | sprites/props tinted by scene, real cast shadows | `DirectionalLight3D` (shadows) + colored `OmniLight3D` accents |
-| Diorama depth | layered 2D-in-3D, parallax | bg backdrop plane + midground billboard props + foreground blur frame |
-| Sprites | hand-drawn pixel, small, chunky | 128px-canvas billboards at OCTOPATH pixel density (see Asset Standard) |
+| Layer | OCTOPATH signature | Godot 4.6 mechanism | Already present? |
+|---|---|---|---|
+| Depth of field | tilt-shift "miniature" | `CameraAttributesPractical` near+far | ✅ yes (amount 0.08 — likely under-tuned) |
+| Camera | telephoto compression, ¾ angle | low FOV, follow | ⚠️ fov 46 (wide-ish; OCTOPATH flatter ~28–35) |
+| Bloom | strong overexposed glow | `Environment` glow | ✅ yes (intensity 0.45 — tune) |
+| Tonemap & grading | high saturation, filmic | FILMIC + adjustments | ✅ yes (sat 1.18 — tune) |
+| Atmosphere | depth fog, god rays, dust | fog + `GPUParticles3D` | ⚠️ fog yes; dust/rays no |
+| Lighting | scene-tinted sprites, cast shadows | dir light + colored omni | ⚠️ sun+shadows yes; accent omni no; sprite shading inconsistent |
+| Diorama depth | layered 2D-in-3D, parallax | backdrop + mid + foreground | ⚠️ trees ring yes; far backdrop / fg-blur frame no |
+| Sprites | chunky hand-drawn pixel | 128px billboards at uniform density | ❌ assets too dense + inconsistent |
 
-## Asset Standard (locked)
+The grade already exists and is decent — the gap to OCTOPATH is **tuning + a few missing layers + asset density**, not building from zero.
 
-OCTOPATH has **no single "sprite size"** — what must align is **pixel density** (how many real pixels draw the character body), not canvas number. Audit of the existing 256×256 sprites found native-block ≈ 1px with a ~232px-tall body — i.e. ~3× OCTOPATH's pixel density. They read as smooth HD illustration, not chunky HD-2D pixel art, so they **do not conform and will be regenerated, not resized**.
+## Asset Standard (locked) — density + uniform grain
 
-Locked standard for this project:
+OCTOPATH's tell is one **uniform pixel grain** across the whole frame. Audit of current assets:
+
+| Class | Canvas | native-block | px-per-world-unit (≈) |
+|---|---|---|---|
+| Party / NPC | 256×256 | 1 (full detail) | ~107 (hero @2.4u, body ~232px) |
+| Props | 64×64 | 1 (full detail) | ~53 (barrel @1.2u) |
+
+Two problems: (a) far denser than OCTOPATH's chunky grain; (b) party grain ≈ **2× props grain** — non-uniform.
+
+Locked standard:
 
 | Item | Value | Rationale |
 |---|---|---|
 | Character frame canvas | **128×128 px** | matches OCTOPATH character sprites |
-| Character body height | **~72 px** (64–80 range) | OCTOPATH chunky pixel density |
-| Internal upscaling | **none — 1:1 native** (native-block = 1) | keeps the grain real |
-| Render scaling | integer scale + nearest filter | crisp pixels, no mush |
-| Global PPU | one density shared across characters / props / tiles | uniform grain per frame is the HD-2D tell |
-| Enemies | higher-res 2D illustration + pixel-style filter, **not** drawn at 128px | mirrors OCTOPATH (enemies aren't true pixel art) |
+| Character body height | **~72 px** (64–80) | OCTOPATH chunky density |
+| Internal upscaling | **none — 1:1 native** (block = 1) | real grain |
+| **Uniform target density** | **~36–44 px per world unit, shared by ALL billboards** (chars, NPCs, props) | uniform grain is the HD-2D tell; per-class canvas is sized from its world height to hit this |
+| Render | integer scale + nearest filter | crisp |
+| Enemies | higher-res 2D illustration + pixel-style filter, **not** 128px pixel art | mirrors OCTOPATH (enemies aren't true pixel art) |
 
-Sources: character canvas 128×128 — Aviakesh sprite breakdown (single-source, medium-high confidence); enemies-not-pixel-art — community measurement (GameFAQs); HD-2D definition — Wikipedia. The Spriters Resource sheets corroborate but were unreachable (403) at spec time.
+Code note: `HD2D.character()` already derives `pixel_size` from `texture.get_height()` (`HD2D.gd:22-25`); the `256` is only a fallback default. So aligning density is mostly **new textures at the right canvas + chosen world heights**, not code — the fallback can simply track the standard.
 
-Consequence: `HD2D.gd` currently hardcodes `tex_h = 256` — change to 128. Party sprites (hero, mage, cleric, hunter) are regenerated via the `game-assets` (Meowa) skill at the standard above before the render scene is built; the 2 enemy sprites (wolf, goblin) follow the illustration route.
+Sources: character canvas 128×128 — Aviakesh sprite breakdown (single-source, medium-high confidence); enemies-not-pixel-art — community measurement (GameFAQs); HD-2D — Wikipedia. The Spriters Resource corroborates but was 403 at spec time.
 
-## Architecture
+## Architecture & Migration Path (no parallel rig)
 
-Build the rig as **small, reusable, independently understandable units**, then compose them in `Field.tscn`.
+The rig is currently **inline in `Field.gd`**. We extract — not re-invent — those exact blocks:
 
-### Components
+| New unit | Built from | Consumers |
+|---|---|---|
+| `scripts/HD2DEnvironment.gd` → `environment()` | move `Field.gd._build_environment` body verbatim, then tune | Field, Battle |
+| `scripts/HD2DStage.gd` → `camera()` | move `Field.gd._build_camera` (DOF attrs) | Field, Battle |
+| `scripts/HD2DStage.gd` → `key_light()` | move `Field.gd._build_light` | Field, Battle |
+| `scripts/HD2DStage.gd` → `accent_light()`, `dust()`, `backdrop()`, `foreground_frame()` | **new** atmosphere layers | Field (Battle optional) |
+| `scripts/HD2D.gd` (existing) | keep `character()/blob_shadow()/ground()`; reconcile sprite shading (see Open Qs) | all |
 
-1. **`scripts/HD2DEnvironment.gd`** — static factory returning a tuned `Environment` resource (glow, tonemap, adjustments, fog). One place to tune the global "grade". Used by every scene.
-2. **`scripts/HD2DStage.gd`** — static helpers to build the shared rig:
-   - `camera()` → `Camera3D` with low FOV, ¾ pitch, and a `CameraAttributesPractical` with DOF tuned.
-   - `key_light()` → warm shadow-casting `DirectionalLight3D`.
-   - `accent_light(color, energy)` → colored `OmniLight3D`.
-   - `dust(area)` → `GPUParticles3D` drifting motes.
-   - `backdrop(tex_path)` → far-plane quad for the background image, placed beyond DOF far-blur so it reads as soft background.
-3. **`scripts/HD2D.gd`** (existing) — extended as needed:
-   - Change `character()` to assume the 128px standard (was 256); decide shaded vs. unlit during tuning — see Open Questions.
-   - Keep `blob_shadow()`, `ground()`.
-   - Add `prop(tex_path)` for midground billboard scenery (trees/rocks) reusing enemy/decor sprites if available, else simple placeholders.
-4. **`scenes/Field.tscn` + `scripts/Field.gd`** — composes: `WorldEnvironment` (from #1) → ground (#3) → backdrop + midground props + foreground frame (#2/#3) → key + accent lights (#2) → dust (#2) → camera (#2) → a stub party member sprite (#3) standing on the ground. No gameplay logic required for the visual milestone.
+Migration is **behavior-preserving first**: move values verbatim so the screenshot before/after matches, *then* tune centrally. `Battle.gd` is switched to call the same factories (replacing whatever rig it builds inline) so the two scenes can never drift. Explicitly: do **not** leave a second copy of env/camera/light values anywhere.
 
-### Why this split
+## Verification Method (corrected)
 
-- `HD2DEnvironment` and `HD2DStage` are scene-agnostic, so the future Battle scene reuses them verbatim — one consistent style, one place to tune.
-- `Field.gd` only *composes*; it holds no rendering knowledge of its own, so changing the grade never means editing scene logic.
+Visual QA needs a real GPU context; `--headless` only reaches resource load. Fresh checkouts have no display, so **xvfb is required**:
 
-## Data Flow
+```
+SHOT_OUT=/tmp/field.png SHOT_FRAMES=120 \
+  xvfb-run -a ~/.local/bin/godot --path . --rendering-driver vulkan \
+  res://scenes/Field.tscn
+```
 
-`project.godot` main_scene → (later) Title → Field. For this slice we temporarily set `Field.tscn` as the run target so we can iterate, and restore the intended flow at the end.
+- Targets the scene via positional arg / `--scene`, so we **never edit `project.godot`** to iterate, and the real main scene stays `Title.tscn`.
+- Reuses the existing `SHOT_OUT`/`SHOT_FRAMES` hook in `SceneManager.gd`.
+- Same command with `res://scenes/Battle.tscn` for battle parity, and run `Title.tscn` once per milestone to confirm the full flow still boots.
+- `--headless` is used only for parse/load smoke checks, never as visual sign-off.
 
-`Field.gd._ready()` instantiates the rig from the factories and adds child nodes. All rendering parameters live in the two factory scripts; the scene is just composition.
+## CLI Class-Cache Caveat (point 5)
 
-## Validation Method (the iteration loop)
+`Field.gd` / `Player.gd` reference the global class `HD2D` (`class_name HD2D`). On a **fresh repo with no `.godot/` cache**, `godot --check-only --script res://scripts/Field.gd` fails with `Identifier "HD2D" not declared` because the global-class registry hasn't been built.
 
-For each milestone:
-1. Run headless render: `~/.local/bin/godot --path . --rendering-driver vulkan` with a short auto-screenshot script (a one-off `@tool`/`_ready` `get_viewport().get_texture().get_image().save_png(...)`), or `--write-movie`/`--quit-after` a few frames.
-2. Read the screenshot, compare against OCTOPATH reference mentally, tune the factory params.
-3. Repeat until the frame reads as HD-2D.
+Mitigations (spec mandates both):
+1. **Prerequisite import/cache pass** before any CLI script check: `xvfb-run -a ~/.local/bin/godot --path . --import` (or one `--editor --quit`) to populate `.godot/global_script_class_cache.cfg`.
+2. In **new or edited** scripts, reference HD2D via explicit `preload("res://scripts/HD2D.gd")` rather than relying on the ambient `class_name`, so checks are robust even pre-cache.
 
-Screenshots are shown to the user at each milestone for a quality call.
+## Milestones (on existing code; each ends in a screenshot + commit)
 
-## Milestones (incremental, each independently runnable & screenshotted)
+- **M0 — Asset density alignment:** regenerate 4 party sprites @128 / ~72px / 1:1 via the `game-assets` (Meowa) skill; set props/NPC canvas to hit the uniform ~36–44 px/unit target; decide enemy route; replace files; re-audit with the density script.
+- **M1 — Rig extraction (behavior-preserving):** create `HD2DEnvironment.gd` + `HD2DStage.gd` from the inline Field blocks; Field + Battle consume them. Screenshot must match pre-refactor (no visual regression). Run import pass first (caveat above).
+- **M2 — Grade elevation:** tune DOF (stronger tilt-shift), FOV (~28–35), glow, fog, saturation toward OCTOPATH; add `GPUParticles3D` dust + a distant backdrop plane + a foreground out-of-focus frame; add an accent omni light; reconcile sprite shading. Screenshot-iterate against OCTOPATH reference.
+- **M3 — Battle parity:** confirm Battle renders through the shared rig and reads consistently; tune the battle camera distance/angle only.
+- **M4 — Polish + full-flow run:** Title→Field→Battle all boot under xvfb; document the final tuned values in this spec.
 
-- **M0 — Sprites to standard:** regenerate the 4 party sprites via the `game-assets` (Meowa) skill at 128×128 / ~72px body / 1:1 native; decide enemy approach. Replace the placeholders in `assets/sprites/`. Verify dimensions/density with the same audit script. Update `HD2D.gd` `tex_h` to 128.
-- **M1 — Empty stage runs:** `Field.tscn` with ground + camera + key light + `WorldEnvironment` (tonemap + glow + fog). Proves the project runs and the grade is alive. Restore-point for the render rig.
-- **M2 — Sprite in the world:** add stub hero billboard + blob shadow; tune sprite lighting/readability against the graded scene.
-- **M3 — Depth & atmosphere:** DOF dialed in, backdrop plane, dust particles, accent light. This is where "miniature diorama" appears.
-- **M4 — Diorama dressing:** midground props + foreground out-of-focus frame for real parallax depth.
-- **M5 — Polish pass:** final grade/bloom/DOF/fog tuning; document the tuned values; restore intended scene flow.
+## Open Questions (resolved during implementation, non-blocking)
 
-Each milestone is a commit.
-
-## Open Questions / Tuning Decisions (resolved during implementation, not blocking)
-
-- **Shaded vs. unlit sprites:** OCTOPATH keeps characters highly readable. Likely keep character billboards `shaded=false` (readable) but let bloom + tonemap + color-grade still affect them, with blob + optional cast shadow for grounding. Will A/B both during M2.
-- **DOF strength:** strong enough for the miniature feel without making the playable character mushy — tuned at M3.
-- **Pixel crispness vs. MSAA/DOF:** keep sprite nearest-filtering; confirm MSAA/DOF don't muddy pixels; adjust at M3.
+- **Sprite shading consistency:** props use `HD2D.character(..., shaded=true)` (scene-tinted); the player uses the `shaded=false` default (self-lit). Pick one policy (likely: characters unlit-but-graded for readability, environment props lit) and apply uniformly.
+- **Exact uniform density** (36 vs 44 px/unit): pick by A/B screenshot at M0.
+- **DOF/FOV target:** strong enough for the miniature feel without making the playable character mushy — M2.
+- **Enemy illustration route timing:** this slice, or deferred with current enemies as placeholders.
 
 ## Out-of-Scope Follow-ups (future specs)
 
-- Battle scene reusing the rig.
-- Asset-quality upgrade pass via Meowa (normal maps for terrain, more props, environment art).
-- Gameplay systems.
+- Battle combat/layout redesign.
+- Net-new environment art + normal-mapped terrain via Meowa.
+- Additional characters / jobs / animation frames.
