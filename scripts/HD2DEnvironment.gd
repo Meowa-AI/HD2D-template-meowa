@@ -43,7 +43,7 @@ static func environment(profile: String = "field") -> Environment:
 			# so shadowed regions read indigo from this ambient).
 			env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 			env.ambient_light_color = Color(0.349, 0.325, 0.420)
-			env.ambient_light_energy = 0.5
+			env.ambient_light_energy = 0.6  # lilac fill; sun front-lights the readable side
 			env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 			env.tonemap_exposure = 0.97
 			env.glow_enabled = true

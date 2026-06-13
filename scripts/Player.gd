@@ -23,7 +23,7 @@ func _ready() -> void:
 	col.position.y = 0.7
 	add_child(col)
 
-	_sprite = HD2D.character(sprite_path, 2.4)
+	_sprite = HD2D.character(sprite_path, 2.4, true)  # CB: lit so it catches the scene light
 	add_child(_sprite)
 	_base_scale = _sprite.scale
 

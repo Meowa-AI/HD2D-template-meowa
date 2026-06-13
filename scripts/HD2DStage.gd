@@ -8,7 +8,7 @@ static func key_light(profile: String = "field") -> DirectionalLight3D:
 		"battle":
 			sun.light_color = Color(1.0, 0.98, 0.95)  # CB near-white noon
 			sun.light_energy = 1.0
-			sun.rotation_degrees = Vector3(-50, -120, 0)
+			sun.rotation_degrees = Vector3(-45, -20, 0)  # front-light combatants (readable)
 		_:
 			# CB: near-white sun; indigo shadow mood comes from the lilac ambient,
 			# not a shadow_color (which does not exist in Godot 4.6).
@@ -18,7 +18,9 @@ static func key_light(profile: String = "field") -> DirectionalLight3D:
 			sun.shadow_bias = 0.04
 			sun.shadow_opacity = 0.85
 			sun.shadow_blur = 1.5
-			sun.rotation_degrees = Vector3(-52, -130, 0)
+			# Angled from behind/above the camera (+Z) so it front-lights the
+			# camera-facing billboards (keeps sprites readable); slight side for shadow.
+			sun.rotation_degrees = Vector3(-48, -28, 0)
 	return sun
 
 static func make_camera(profile: String = "field") -> Camera3D:

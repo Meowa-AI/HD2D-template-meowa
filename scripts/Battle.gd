@@ -184,7 +184,7 @@ func _place(c: Combatant, pos: Vector3, enemy: bool) -> void:
 	var height := 2.6
 	if enemy:
 		height = 2.6 * float(c.get_meta("scale"))
-	var spr := HD2D.character(tex, height, false)
+	var spr := HD2D.character(tex, height, true)  # CB: lit combatants
 	if enemy:
 		spr.flip_h = true   # enemies look toward the party
 	root.add_child(spr)

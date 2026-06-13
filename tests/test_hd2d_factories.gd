@@ -38,7 +38,7 @@ func _initialize() -> void:
 	# CB signature: lilac ambient (the GD4 indigo-shadow mechanism) + SSAO.
 	_eq(f.ambient_light_source, Environment.AMBIENT_SOURCE_COLOR, "field.ambient_src")
 	_eq(f.ambient_light_color, Color(0.349, 0.325, 0.420), "field.ambient_color")
-	_eq(f.ambient_light_energy, 0.5, "field.ambient_energy")
+	_eq(f.ambient_light_energy, 0.6, "field.ambient_energy")
 	_eq(f.ssao_enabled, true, "field.ssao")
 
 	var b := Env.environment("battle")
@@ -56,10 +56,10 @@ func _initialize() -> void:
 	var fl := Stage.key_light("field")
 	_eq(fl.shadow_enabled, true, "field.light.shadow")
 	_eq(fl.light_energy, 1.0, "field.light.energy")
-	_eq(fl.rotation_degrees, Vector3(-52, -130, 0), "field.light.rot")
+	_eq(fl.rotation_degrees, Vector3(-48, -28, 0), "field.light.rot")
 	var bl := Stage.key_light("battle")
 	_eq(bl.light_energy, 1.0, "battle.light.energy")
-	_eq(bl.rotation_degrees, Vector3(-50, -120, 0), "battle.light.rot")
+	_eq(bl.rotation_degrees, Vector3(-45, -20, 0), "battle.light.rot")
 
 	var fc := Stage.make_camera("field")
 	_eq(fc.fov, 30.0, "field.cam.fov")
