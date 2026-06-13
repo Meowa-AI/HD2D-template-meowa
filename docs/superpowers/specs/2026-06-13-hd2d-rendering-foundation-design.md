@@ -149,3 +149,26 @@ Mitigations (spec mandates both):
 - Battle combat/layout redesign.
 - Net-new environment art + normal-mapped terrain via Meowa.
 - Additional characters / jobs / animation frames.
+
+---
+
+## Final tuned values (M4)
+
+Implemented and verified (Title→Field→Battle all boot under `xvfb` + Vulkan/Forward+, no script errors). The rig lives in `scripts/HD2DEnvironment.gd` + `scripts/HD2DStage.gd`, parameterized by profile; the factory value-test `tests/test_hd2d_factories.gd` guards these numbers.
+
+**Asset density (M0):** party sprites regenerated via Meowa `pixel_char_1` at 128×128 canvas (native pixel, ~half the old 256px density), `world_height` 2.4 unchanged. Enemies remain placeholders.
+
+**Field profile:**
+- Camera: FOV **30** (telephoto); follow offset `(0, 10.5, 18)`, look `(0, 1.6, 0)` in `Field.gd`.
+- DOF (tilt-shift): far enabled dist 26 / transition 5; near enabled dist 16.5 / transition 5; amount **0.34**.
+- Environment: `BG_SKY` + procedural sky; ambient sky 0.9; FILMIC exp 1.05; glow 0.5 / bloom 0.2 / softlight / hdr_threshold 1.0; fog density 0.004 / aerial 0.35; adjustments brightness 1.0 / contrast 1.15 / saturation 1.32.
+- Key light: warm `(1.0,0.94,0.82)` energy 1.15, shadows on, rot `(-52,-130,0)`.
+- Atmosphere: `HD2DStage.dust(GROUND_SIZE)` + warm `accent_light((1.0,0.82,0.45), 5.0, (-6.5,2.6,9.0))`.
+- Ground: richer lush seamless grass texture (Meowa `texture-gen-run`).
+
+**Battle profile (parity, field grade untouched):**
+- Camera: FOV 42, fixed `(0,6.4,13.5)`→`(0,2.4,-2)`; DOF far-only dist 19 / transition 6 / amount 0.12.
+- Environment: `BG_COLOR (0.04,0.05,0.08)`; ambient color `(0.7,0.72,0.8)` energy 1.1; FILMIC; glow 0.55 / bloom 0.18 / hdr 1.0; saturation 1.22 / contrast 1.12; no fog.
+- Key light: `(1.0,0.93,0.8)` energy 1.0, rot `(-50,-120,0)`. Backdrop: `battle_bg.jpg` 46×26 @ `(0,9,-16)`.
+
+**Deferred (future specs):** ground normal map + path/dirt texture; enemy HD-illustration pipeline; props/NPC density pass to uniform 36 px/unit; net-new environment art.
