@@ -4,12 +4,15 @@ extends SceneTree
 ## Uses preload (not class_name) so it works without the global-class cache.
 
 const Env := preload("res://scripts/HD2DEnvironment.gd")
+const Stage := preload("res://scripts/HD2DStage.gd")
 
 var _fail := 0
 
 func _eq(got, want, label: String) -> void:
 	var ok := false
 	if got is Color and want is Color:
+		ok = got.is_equal_approx(want)
+	elif got is Vector3 and want is Vector3:
 		ok = got.is_equal_approx(want)
 	elif (got is float or got is int) and (want is float or want is int):
 		ok = is_equal_approx(float(got), float(want))
@@ -41,6 +44,23 @@ func _initialize() -> void:
 
 	var unknown := Env.environment("bogus")
 	_eq(unknown.background_mode, Environment.BG_SKY, "unknown.falls_back_to_field")
+
+	var fl := Stage.key_light("field")
+	_eq(fl.shadow_enabled, true, "field.light.shadow")
+	_eq(fl.light_energy, 1.15, "field.light.energy")
+	_eq(fl.rotation_degrees, Vector3(-52, -130, 0), "field.light.rot")
+	var bl := Stage.key_light("battle")
+	_eq(bl.light_energy, 1.0, "battle.light.energy")
+	_eq(bl.rotation_degrees, Vector3(-50, -120, 0), "battle.light.rot")
+
+	var fc := Stage.make_camera("field")
+	_eq(fc.fov, 46.0, "field.cam.fov")
+	_eq((fc.attributes as CameraAttributesPractical).dof_blur_near_enabled, true, "field.cam.near_dof")
+	_eq((fc.attributes as CameraAttributesPractical).dof_blur_amount, 0.08, "field.cam.dof_amount")
+	var bc := Stage.make_camera("battle")
+	_eq(bc.fov, 42.0, "battle.cam.fov")
+	_eq((bc.attributes as CameraAttributesPractical).dof_blur_near_enabled, false, "battle.cam.no_near_dof")
+	_eq((bc.attributes as CameraAttributesPractical).dof_blur_amount, 0.06, "battle.cam.dof_amount")
 
 	print("RESULT: %s" % ("PASS" if _fail == 0 else "FAIL (%d)" % _fail))
 	quit(_fail)
