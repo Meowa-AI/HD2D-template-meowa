@@ -31,7 +31,7 @@ So this is **not greenfield**. The work is three things on existing code:
 ## Non-Goals
 
 - Gameplay changes (movement, encounter rules, dialogue, battle combat logic/layout). Battle **inherits the shared rig's params** but its combat is not redesigned here.
-- Full asset-library regeneration. In scope now: the 4 party sprites + a density policy applied to props/NPCs/enemies. Net-new environment art is later.
+- Full asset-library regeneration. In scope now: the 4 party sprites + the 36 px/unit density policy applied to props/NPCs. **Enemies stay as placeholders this slice** (their dedicated illustration route is deferred). Net-new environment art is later.
 - Title screen redesign (must keep working; not a polish target).
 
 ## Target Look — Decomposition
@@ -67,7 +67,7 @@ Locked standard:
 | Character frame canvas | **128×128 px** | matches OCTOPATH character sprites |
 | Character body height | **~72 px** (64–80) | OCTOPATH chunky density |
 | Internal upscaling | **none — 1:1 native** (block = 1) | real grain |
-| **Uniform target density** | **~36–44 px per world unit, shared by ALL billboards** (chars, NPCs, props) | uniform grain is the HD-2D tell; per-class canvas is sized from its world height to hit this |
+| **Uniform target density** | **36 px per world unit, shared by ALL billboards** (chars, NPCs, props) | uniform grain is the HD-2D tell. 72px body ÷ 36 = 2.0 world units tall — matches current scene scale; 44 would give ~1.64u (too small, grain too fine). Per-class canvas is sized from its world height to hit 36 |
 | Render | integer scale + nearest filter | crisp |
 | Enemies | higher-res 2D illustration + pixel-style filter, **not** 128px pixel art | mirrors OCTOPATH (enemies aren't true pixel art) |
 
@@ -75,19 +75,33 @@ Code note: `HD2D.character()` already derives `pixel_size` from `texture.get_hei
 
 Sources: character canvas 128×128 — Aviakesh sprite breakdown (single-source, medium-high confidence); enemies-not-pixel-art — community measurement (GameFAQs); HD-2D — Wikipedia. The Spriters Resource corroborates but was 403 at spec time.
 
-## Architecture & Migration Path (no parallel rig)
+## Architecture & Migration Path (no parallel rig, profile-parameterized)
 
-The rig is currently **inline in `Field.gd`**. We extract — not re-invent — those exact blocks:
+Both `Field.gd` and `Battle.gd` already build their **own** inline rigs with **scene-appropriate, genuinely different values** (verified):
 
-| New unit | Built from | Consumers |
+| | Field (`Field.gd`) | Battle (`Battle.gd`) |
 |---|---|---|
-| `scripts/HD2DEnvironment.gd` → `environment()` | move `Field.gd._build_environment` body verbatim, then tune | Field, Battle |
-| `scripts/HD2DStage.gd` → `camera()` | move `Field.gd._build_camera` (DOF attrs) | Field, Battle |
-| `scripts/HD2DStage.gd` → `key_light()` | move `Field.gd._build_light` | Field, Battle |
-| `scripts/HD2DStage.gd` → `accent_light()`, `dust()`, `backdrop()`, `foreground_frame()` | **new** atmosphere layers | Field (Battle optional) |
-| `scripts/HD2D.gd` (existing) | keep `character()/blob_shadow()/ground()`; reconcile sprite shading (see Open Qs) | all |
+| Env background | `BG_SKY` + procedural sky + fog | `BG_COLOR` (0.04,0.05,0.08), no fog |
+| Ambient | sky source, energy 0.9 | color source (0.7,0.72,0.8), energy 1.1 |
+| Glow / sat | 0.45 / 1.18 | 0.50 / 1.12 |
+| Sun | rot (−52,−130), energy 1.15, shadows on | rot (−50,−120), energy 1.0 |
+| Camera | **follow**, fov 46, near+far DOF | **fixed** (0,6.4,13.5)→(0,2.4,−2), fov 42, **far-only** DOF |
+| Backdrop | none (tree ring) | painted quad `battle_bg.jpg` 46×26 @ (0,9,−16) |
 
-Migration is **behavior-preserving first**: move values verbatim so the screenshot before/after matches, *then* tune centrally. `Battle.gd` is switched to call the same factories (replacing whatever rig it builds inline) so the two scenes can never drift. Explicitly: do **not** leave a second copy of env/camera/light values anywhere.
+So the unit of sharing is the **factory + a scene `profile`**, NOT a single value set. The factory holds the structure; each profile (`"field"` / `"battle"`) supplies that scene's current values so M1 reproduces both looks exactly.
+
+| New unit | Signature / behavior | Built from | Consumers |
+|---|---|---|---|
+| `scripts/HD2DEnvironment.gd` | `environment(profile := "field") -> Environment` — **returns the resource only**; the caller wraps it in `WorldEnvironment` and `add_child`s | `Field._build_environment` + `Battle._build_world` env blocks → two profiles | Field, Battle |
+| `scripts/HD2DStage.gd` | `key_light(profile) -> DirectionalLight3D` | `Field._build_light` + Battle sun | Field, Battle |
+| `scripts/HD2DStage.gd` | `make_camera(profile) -> Camera3D` + `apply_dof(camera, profile)` — **no follow/update logic inside** | `Field._build_camera` + `Battle._build_camera` (DOF attrs) | Field, Battle |
+| `scripts/HD2DStage.gd` | `backdrop(profile/params)` — Battle's existing quad migrates here in M1 | `Battle._build_world` backdrop block | Battle (M1); Field far backdrop is **new in M2** |
+| `scripts/HD2DStage.gd` | `dust()`, `accent_light()`, `foreground_frame()` — **new** atmosphere layers | new | Field (M2); Battle optional |
+| `scripts/HD2D.gd` (existing) | keep `character()/blob_shadow()/ground()`; may add a `billboard()` alias + a density constant — **no large refactor** | unchanged | all |
+
+**Camera follow stays in the scene.** Field's follow/update lives in `Field.gd:345` (`_process` lerp) and must remain there; Battle's camera is fixed (`Battle.gd:222`). The factory only *constructs* the camera + DOF from a profile; runtime motion is the scene's job.
+
+Migration is **behavior-preserving**: M1 extracts structure into the factories and routes both scenes through profiles that emit their *current* values — neither scene's look changes. Tuning happens later (M2+), centrally, by editing the profiles. Explicitly: do **not** impose Field's numbers on Battle, and do **not** leave a second copy of any rig block inline after extraction.
 
 ## Verification Method (corrected)
 
@@ -96,12 +110,12 @@ Visual QA needs a real GPU context; `--headless` only reaches resource load. Fre
 ```
 SHOT_OUT=/tmp/field.png SHOT_FRAMES=120 \
   xvfb-run -a ~/.local/bin/godot --path . --rendering-driver vulkan \
-  res://scenes/Field.tscn
+  --scene res://scenes/Field.tscn
 ```
 
-- Targets the scene via positional arg / `--scene`, so we **never edit `project.godot`** to iterate, and the real main scene stays `Title.tscn`.
+- Targets the scene with the official `--scene` flag (not a positional arg), so we **never edit `project.godot`** to iterate, and the real main scene stays `Title.tscn`.
 - Reuses the existing `SHOT_OUT`/`SHOT_FRAMES` hook in `SceneManager.gd`.
-- Same command with `res://scenes/Battle.tscn` for battle parity, and run `Title.tscn` once per milestone to confirm the full flow still boots.
+- Same command with `--scene res://scenes/Battle.tscn` for battle parity, and `--scene res://scenes/Title.tscn` once per milestone to confirm the full flow still boots.
 - `--headless` is used only for parse/load smoke checks, never as visual sign-off.
 
 ## CLI Class-Cache Caveat (point 5)
@@ -114,18 +128,21 @@ Mitigations (spec mandates both):
 
 ## Milestones (on existing code; each ends in a screenshot + commit)
 
-- **M0 — Asset density alignment:** regenerate 4 party sprites @128 / ~72px / 1:1 via the `game-assets` (Meowa) skill; set props/NPC canvas to hit the uniform ~36–44 px/unit target; decide enemy route; replace files; re-audit with the density script.
-- **M1 — Rig extraction (behavior-preserving):** create `HD2DEnvironment.gd` + `HD2DStage.gd` from the inline Field blocks; Field + Battle consume them. Screenshot must match pre-refactor (no visual regression). Run import pass first (caveat above).
-- **M2 — Grade elevation:** tune DOF (stronger tilt-shift), FOV (~28–35), glow, fog, saturation toward OCTOPATH; add `GPUParticles3D` dust + a distant backdrop plane + a foreground out-of-focus frame; add an accent omni light; reconcile sprite shading. Screenshot-iterate against OCTOPATH reference.
-- **M3 — Battle parity:** confirm Battle renders through the shared rig and reads consistently; tune the battle camera distance/angle only.
-- **M4 — Polish + full-flow run:** Title→Field→Battle all boot under xvfb; document the final tuned values in this spec.
+- **M0 — Asset density alignment:** regenerate 4 party sprites @128 / ~72px / 1:1 via the `game-assets` (Meowa) skill; size props/NPC canvas to hit the uniform **36 px/unit** target; replace files; re-audit with the density script. **Then capture a fresh post-M0 baseline screenshot** — this becomes the reference M1 must preserve.
+- **M1 — Rig extraction (behavior-preserving):** create `HD2DEnvironment.gd` + `HD2DStage.gd` with `"field"`/`"battle"` profiles emitting each scene's *current* values; route Field **and** Battle through them (Battle's backdrop migrates too). Field and Battle screenshots must each match the **post-M0** baseline — no visual change from the refactor. Run the `--import` pass first (caveat above).
+- **M2 — Grade elevation:** tune the **profiles** (Field first) toward OCTOPATH — stronger tilt-shift DOF, flatter FOV (~28–35), glow, fog, saturation; add `GPUParticles3D` dust + a distant Field backdrop + a foreground out-of-focus frame + an accent omni light; reconcile the one shading inconsistency (Field props `shaded=true` vs unlit elsewhere). Screenshot-iterate against OCTOPATH reference.
+- **M3 — Battle parity:** with the shared rig in place, adjust only the **battle profile's** camera/layout so Battle reads consistently. Do **not** reverse-edit the shared grade or the field profile. Confirm the placeholder enemies don't look jarring under the shared rig.
+- **M4 — Polish + full-flow run:** Title→Field→Battle all boot under xvfb; document the final tuned profile values in this spec.
+
+## Decisions (locked)
+
+- **Uniform density = 36 px/unit** (see Asset Standard). Not an open question anymore.
+- **Enemies: placeholder this slice.** The HD/illustration route is a *separate* asset pipeline (touches Battle composition, alpha edges, pixel-filter, UI readability) — not the M0 pixel-density fix. This spec only reserves the interface/profile; M3 just ensures the current enemy sprites don't look jarring under the shared rig. Full enemy art is a later spec.
 
 ## Open Questions (resolved during implementation, non-blocking)
 
-- **Sprite shading consistency:** props use `HD2D.character(..., shaded=true)` (scene-tinted); the player uses the `shaded=false` default (self-lit). Pick one policy (likely: characters unlit-but-graded for readability, environment props lit) and apply uniformly.
-- **Exact uniform density** (36 vs 44 px/unit): pick by A/B screenshot at M0.
-- **DOF/FOV target:** strong enough for the miniature feel without making the playable character mushy — M2.
-- **Enemy illustration route timing:** this slice, or deferred with current enemies as placeholders.
+- **Sprite shading consistency:** the only inconsistency is **Field props** (`HD2D.character(..., shaded=true)`, scene-tinted) vs everything else unlit (Field player and *all* Battle sprites use `shaded=false`). Pick one policy at M2 (likely: characters unlit-but-graded for readability; environment props may stay lit) and apply deliberately.
+- **DOF/FOV target:** strong enough for the miniature feel without making the playable character mushy — tuned in the field profile at M2.
 
 ## Out-of-Scope Follow-ups (future specs)
 
