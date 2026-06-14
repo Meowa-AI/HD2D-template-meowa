@@ -12,6 +12,7 @@ extends Node3D
 
 const HD2DEnvironment := preload("res://scripts/HD2DEnvironment.gd")
 const HD2DStage := preload("res://scripts/HD2DStage.gd")
+const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
 
 # ----- tuning ---------------------------------------------------------------
 const WEAKNESS_MULT := 1.6
@@ -180,14 +181,24 @@ func _make_enemy(key: String, idx: int) -> Combatant:
 func _place(c: Combatant, pos: Vector3, enemy: bool) -> void:
 	var root := Node3D.new()
 	root.position = pos
-	var tex: String = c.get_meta("sprite") if enemy else GameData.party_sprite(c.id)
 	var height := 2.6
 	if enemy:
 		height = 2.6 * float(c.get_meta("scale"))
-	var spr := HD2D.character(tex, height, true)  # CB: lit combatants
+	# Animated combatant (CB-style): party idle sheets, enemies use walk sheets.
+	var anim_path := "res://assets/sprites/%s_%s.png" % [c.id, "walk" if enemy else "idle"]
+	var anim_frames := 6 if enemy else 4
+	var spr: Sprite3D
+	if ResourceLoader.exists(anim_path):
+		var ab := AnimatedBillboardScene.new()
+		root.add_child(ab)
+		ab.setup(load(anim_path), anim_frames, height, 4.0)
+		spr = ab
+	else:
+		var tex: String = c.get_meta("sprite") if enemy else GameData.party_sprite(c.id)
+		spr = HD2D.character(tex, height, true)
+		root.add_child(spr)
 	if enemy:
 		spr.flip_h = true   # enemies look toward the party
-	root.add_child(spr)
 	root.add_child(HD2D.blob_shadow(0.6, 0.45))
 	add_child(root)
 	c.root = root
