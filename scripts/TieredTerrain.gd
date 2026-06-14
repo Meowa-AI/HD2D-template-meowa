@@ -26,6 +26,16 @@ const TEX := [
 	"res://assets/textures/sand.png",            # 4 lakeside
 ]
 
+# Overlay biomes (everything except grassland=0), rendered bottom→top as alpha
+# layers over the opaque grass base; each uses its transparent dual-grid sheet.
+const OVERLAYS := [
+	{"biome": 2, "tex": "res://assets/textures/tilesets/forest_floor_dualgrid.png"},
+	{"biome": 1, "tex": "res://assets/textures/tilesets/flower_meadow_dualgrid.png"},
+	{"biome": 3, "tex": "res://assets/textures/tilesets/rock_ground_dualgrid.png"},
+	{"biome": 4, "tex": "res://assets/textures/tilesets/sand_dualgrid.png"},
+]
+const DualGrid := preload("res://scripts/DualGrid.gd")
+
 # ---- world shape -----------------------------------------------------------
 
 static func height_at(x: float, z: float) -> float:
@@ -61,12 +71,8 @@ const CLIFF_SPAN := 3.0   # a cell whose corner heights span more than this is t
 
 static func build(half: float = 72.0) -> Node3D:
 	var root := Node3D.new()
-	var tops: Array[SurfaceTool] = []
-	for i in TEX.size():
-		var st := SurfaceTool.new()
-		st.begin(Mesh.PRIMITIVE_TRIANGLES)
-		tops.append(st)
-	var cliff := SurfaceTool.new(); cliff.begin(Mesh.PRIMITIVE_TRIANGLES)   # steep faces (border, sharp drops)
+	var base := SurfaceTool.new(); base.begin(Mesh.PRIMITIVE_TRIANGLES)    # opaque grass top
+	var cliff := SurfaceTool.new(); cliff.begin(Mesh.PRIMITIVE_TRIANGLES)  # steep faces (border, sharp drops)
 
 	var n := int(half * 2.0 / CELL)
 	for gx in n:
@@ -80,16 +86,15 @@ static func build(half: float = 72.0) -> Node3D:
 			var h00 := height_at(x0, z0); var h10 := height_at(x1, z0)
 			var h11 := height_at(x1, z1); var h01 := height_at(x0, z1)
 			var span: float = maxf(maxf(h00, h10), maxf(h11, h01)) - minf(minf(h00, h10), minf(h11, h01))
-			var st: SurfaceTool = cliff if span > CLIFF_SPAN else tops[biome_at(x0 + CELL * 0.5, z0 + CELL * 0.5)]
+			var st: SurfaceTool = cliff if span > CLIFF_SPAN else base
 			_add_quad(st, x0, z0, x1, z1, h00, h10, h11, h01)
 
 	var mesh := ArrayMesh.new()
 	var mats: Array[Material] = []
-	for i in TEX.size():
-		var m := tops[i].commit()
-		if m.get_surface_count() > 0:
-			mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, m.surface_get_arrays(0))
-			mats.append(_mat(TEX[i], Color(1, 1, 1), 1.0))
+	var bm := base.commit()
+	if bm.get_surface_count() > 0:
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, bm.surface_get_arrays(0))
+		mats.append(_mat("res://assets/textures/grass.png", Color(1, 1, 1), 1.0))
 	var cm := cliff.commit()
 	if cm.get_surface_count() > 0:
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, cm.surface_get_arrays(0))
@@ -100,7 +105,56 @@ static func build(half: float = 72.0) -> Node3D:
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
 	root.add_child(mi)
+
+	# Alpha overlay layers (dual-grid), bottom→top in OVERLAYS order.
+	for i in OVERLAYS.size():
+		var layer := _overlay_layer(half, OVERLAYS[i]["biome"], OVERLAYS[i]["tex"], i + 1)
+		if layer != null:
+			root.add_child(layer)
 	return root
+
+# One alpha overlay layer for `biome`, on the half-cell-offset dual-grid render
+# grid (render-tile corners are data-cell centers). Returns null if the biome
+# never appears. `order` drives render_priority and a small Y lift so layers
+# stack without z-fighting.
+static func _overlay_layer(half: float, biome: int, tex_path: String, order: int) -> MeshInstance3D:
+	var st := SurfaceTool.new(); st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var n := int(half * 2.0 / CELL)
+	var emitted := false
+	for i in range(n - 1):
+		for j in range(n - 1):
+			var cxa := -half + (i + 0.5) * CELL   # center(i) = -half + (i+0.5)*CELL
+			var cza := -half + (j + 0.5) * CELL
+			var cxb := cxa + CELL
+			var czb := cza + CELL
+			var tl := biome_at(cxa, cza) == biome
+			var tr := biome_at(cxb, cza) == biome
+			var bl := biome_at(cxa, czb) == biome
+			var br := biome_at(cxb, czb) == biome
+			var mask := DualGrid.tile_index(tl, tr, bl, br)
+			if mask == 0:
+				continue
+			emitted = true
+			_add_overlay_quad(st, cxa, cza, cxb, czb, DualGrid.tile_uv_rect(mask))
+	if not emitted:
+		return null
+	var m := st.commit()
+	var mi := MeshInstance3D.new()
+	mi.mesh = m
+	mi.position.y = 0.02 * float(order)   # stack above grass; avoids z-fighting on slopes
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mat := StandardMaterial3D.new()
+	if ResourceLoader.exists(tex_path):
+		mat.albedo_texture = load(tex_path)
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	mat.roughness = 1.0
+	mat.metallic = 0.0
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.render_priority = order   # higher = drawn later (on top)
+	m.surface_set_material(0, mat)
+	return mi
 
 static func water() -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
@@ -133,6 +187,22 @@ static func _add_quad(st: SurfaceTool, x0: float, z0: float, x1: float, z1: floa
 	var n11 := _normal_at(x1, z1); var n01 := _normal_at(x0, z1)
 	var u00 := Vector2(x0, z0) * TILE_UV; var u10 := Vector2(x1, z0) * TILE_UV
 	var u11 := Vector2(x1, z1) * TILE_UV; var u01 := Vector2(x0, z1) * TILE_UV
+	_vtx(st, p00, n00, u00); _vtx(st, p10, n10, u10); _vtx(st, p11, n11, u11)
+	_vtx(st, p00, n00, u00); _vtx(st, p11, n11, u11); _vtx(st, p01, n01, u01)
+
+# An overlay cell as two triangles; UVs map the four corners onto the chosen
+# dual-grid atlas sub-rect (vs _add_quad which tiles a texture by world position).
+static func _add_overlay_quad(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, uv: Rect2) -> void:
+	var h00 := height_at(x0, z0); var h10 := height_at(x1, z0)
+	var h11 := height_at(x1, z1); var h01 := height_at(x0, z1)
+	var p00 := Vector3(x0, h00, z0); var p10 := Vector3(x1, h10, z0)
+	var p11 := Vector3(x1, h11, z1); var p01 := Vector3(x0, h01, z1)
+	var n00 := _normal_at(x0, z0); var n10 := _normal_at(x1, z0)
+	var n11 := _normal_at(x1, z1); var n01 := _normal_at(x0, z1)
+	var u00 := uv.position
+	var u10 := uv.position + Vector2(uv.size.x, 0)
+	var u11 := uv.position + uv.size
+	var u01 := uv.position + Vector2(0, uv.size.y)
 	_vtx(st, p00, n00, u00); _vtx(st, p10, n10, u10); _vtx(st, p11, n11, u11)
 	_vtx(st, p00, n00, u00); _vtx(st, p11, n11, u11); _vtx(st, p01, n01, u01)
 
