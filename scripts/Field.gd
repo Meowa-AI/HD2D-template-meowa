@@ -319,12 +319,10 @@ func _build_ui() -> void:
 	_dlg_panel.offset_right = -60
 	_dlg_panel.offset_top = -190
 	_dlg_panel.offset_bottom = -40
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.06, 0.07, 0.12, 0.92)
-	sb.border_color = Color(0.85, 0.78, 0.5)
-	sb.set_border_width_all(3)
-	sb.set_corner_radius_all(8)
-	sb.set_content_margin_all(18)
+	var sb := StyleBoxTexture.new()  # CB-style navy panel with cream border (nine-slice)
+	sb.texture = load("res://assets/ui/panel.png")
+	sb.set_texture_margin_all(19)
+	sb.set_content_margin_all(22)
 	_dlg_panel.add_theme_stylebox_override("panel", sb)
 	_dlg_panel.visible = false
 	layer.add_child(_dlg_panel)
