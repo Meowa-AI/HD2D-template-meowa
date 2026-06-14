@@ -10,6 +10,7 @@ const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
 const CloudShadowsScene := preload("res://scripts/CloudShadows.gd")
 const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
 const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
+const MonsterScene := preload("res://scripts/Monster.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -53,6 +54,7 @@ func _ready() -> void:
 	_spawn_grass_zones()
 	_spawn_npcs()
 	_spawn_player()
+	_spawn_monsters()
 	_build_camera()
 	add_child(HD2DStage.dust(GROUND_SIZE))
 	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(-6.5, 2.6, 9.0)))
@@ -274,6 +276,20 @@ func _spawn_player() -> void:
 		SceneManager.remove_meta("field_return_pos")
 	_player.position = start
 	add_child(_player)
+
+func _spawn_monsters() -> void:
+	var specs := [
+		{"s": "wolf_walk", "p": Vector3(8, 0, -3), "h": 2.0},
+		{"s": "goblin_walk", "p": Vector3(-5, 0, 0), "h": 1.9},
+	]
+	for cfg in specs:
+		var m := MonsterScene.new()
+		m.sheet_path = "res://assets/sprites/%s.png" % cfg["s"]
+		m.world_h = cfg["h"]
+		m.bound = TieredTerrain.FLAT - 2.0
+		m._player = _player
+		m.position = cfg["p"]
+		add_child(m)
 
 func _build_camera() -> void:
 	_cam = HD2DStage.make_camera("field")
