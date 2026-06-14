@@ -8,6 +8,7 @@ const HD2DStage := preload("res://scripts/HD2DStage.gd")
 const GrassField := preload("res://scripts/GrassField.gd")
 const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
 const CloudShadowsScene := preload("res://scripts/CloudShadows.gd")
+const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -42,6 +43,10 @@ func _ready() -> void:
 	var clouds := CloudShadowsScene.new()
 	clouds.setup(GROUND_SIZE * 0.5)
 	add_child(clouds)
+	var daynight := DayNightCycleScene.new()
+	daynight.sun = _sun
+	daynight.env = _env
+	add_child(daynight)
 	_build_bounds()
 	_spawn_props()
 	_spawn_grass_zones()
@@ -54,13 +59,18 @@ func _ready() -> void:
 	Audio.play_bgm("res://assets/audio/field_bgm.mp3")
 
 # ---------------------------------------------------------------- environment
+var _env: Environment
+var _sun: DirectionalLight3D
+
 func _build_environment() -> void:
 	var we := WorldEnvironment.new()
-	we.environment = HD2DEnvironment.environment("field")
+	_env = HD2DEnvironment.environment("field")
+	we.environment = _env
 	add_child(we)
 
 func _build_light() -> void:
-	add_child(HD2DStage.key_light("field"))
+	_sun = HD2DStage.key_light("field")
+	add_child(_sun)
 
 # --------------------------------------------------------------------- ground
 func _build_ground() -> void:
