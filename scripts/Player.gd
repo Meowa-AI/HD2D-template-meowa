@@ -1,14 +1,24 @@
 extends CharacterBody3D
-## Field player. Moves on the ground plane, billboarded pixel sprite that flips
-## with facing and does a little squash-bob while walking (we fake a walk cycle
-## since the sprite is a single still frame).
+## Field player. Moves on the ground plane as an 8-direction animated billboard:
+## the facing sheet is picked from the movement angle and a 6-frame walk cycle
+## plays while moving (idle = first frame). Lit so it catches the scene light.
 
 const SPEED := 6.0
 const ACCEL := 18.0
 
-var sprite_path := "res://assets/sprites/hero.png"
+const FRAME := 128          # walk-sheet frame size (px)
+const FRAMES := 6           # frames per walk sheet (768 / 128)
+const WORLD_H := 2.4        # on-screen height in world units
+const WALK_FPS := 9.0
+
+# Movement-angle sectors → facing key. Index = round(atan2(vx, vz) / 45deg).
+const DIR_KEYS := ["s", "se", "e", "ne", "n", "nw", "w", "sw"]
+
+var sprite_path := "res://assets/sprites/hero.png"  # kept for compatibility (unused)
 var _sprite: Sprite3D
-var _base_scale := Vector3.ONE
+var _sheets := {}
+var _dir := "s"
+var _frame := 0
 var _walk_t := 0.0
 var is_moving := false
 var moved_this_frame := 0.0
@@ -23,9 +33,25 @@ func _ready() -> void:
 	col.position.y = 0.7
 	add_child(col)
 
-	_sprite = HD2D.character(sprite_path, 2.4, true)  # CB: lit so it catches the scene light
+	for k in DIR_KEYS:
+		var p := "res://assets/sprites/hero_walk/%s.png" % k
+		if ResourceLoader.exists(p):
+			_sheets[k] = load(p)
+
+	_sprite = Sprite3D.new()
+	_sprite.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+	_sprite.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	_sprite.shaded = true
+	_sprite.double_sided = true
+	_sprite.alpha_cut = SpriteBase3D.ALPHA_CUT_OPAQUE_PREPASS
+	_sprite.alpha_scissor_threshold = 0.4
+	_sprite.region_enabled = true
+	_sprite.region_rect = Rect2(0, 0, FRAME, FRAME)
+	_sprite.pixel_size = WORLD_H / float(FRAME)
+	_sprite.position.y = WORLD_H * 0.5 - WORLD_H * 0.04
+	if _sheets.has("s"):
+		_sprite.texture = _sheets["s"]
 	add_child(_sprite)
-	_base_scale = _sprite.scale
 
 	add_child(HD2D.blob_shadow(0.55, 0.45))
 
@@ -45,20 +71,19 @@ func _physics_process(delta: float) -> void:
 	moved_this_frame = global_position.distance_to(before)
 	is_moving = input.length() > 0.05
 
-	if absf(input.x) > 0.01:
-		facing = signf(input.x)
-		_sprite.flip_h = facing < 0.0
-
+	if is_moving:
+		_dir = DIR_KEYS[(int(round(atan2(input.x, input.y) / (PI / 4.0))) + 8) % 8]
+		if absf(input.x) > 0.01:
+			facing = signf(input.x)
 	_animate(delta)
 
 func _animate(delta: float) -> void:
 	if is_moving:
-		_walk_t += delta * 12.0
-		var bob: float = absf(sin(_walk_t)) * 0.06
-		var squash: float = sin(_walk_t * 2.0) * 0.04
-		_sprite.position.y = (2.4 * 0.5 - 2.4 * 0.04) + bob
-		_sprite.scale = Vector3(_base_scale.x * (1.0 + squash), _base_scale.y * (1.0 - squash), _base_scale.z)
+		_walk_t += delta * WALK_FPS
+		_frame = int(_walk_t) % FRAMES
 	else:
 		_walk_t = 0.0
-		_sprite.position.y = lerp(_sprite.position.y, 2.4 * 0.5 - 2.4 * 0.04, delta * 10.0)
-		_sprite.scale = _sprite.scale.lerp(_base_scale, delta * 10.0)
+		_frame = 0
+	if _sheets.has(_dir) and _sprite.texture != _sheets[_dir]:
+		_sprite.texture = _sheets[_dir]
+	_sprite.region_rect = Rect2(_frame * FRAME, 0, FRAME, FRAME)
