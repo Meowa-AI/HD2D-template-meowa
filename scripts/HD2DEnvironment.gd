@@ -41,9 +41,11 @@ static func environment(profile: String = "field") -> Environment:
 			env.sky = sky
 			# CB signature: lilac ambient fills shadows (GD4 has no shadow_color,
 			# so shadowed regions read indigo from this ambient).
+			# Exact Cassette Beasts daylight ambient: lilac, energy 0.5 + 10% sky.
 			env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 			env.ambient_light_color = Color(0.349, 0.325, 0.420)
-			env.ambient_light_energy = 0.6  # lilac fill; sun front-lights the readable side
+			env.ambient_light_energy = 0.5
+			env.ambient_light_sky_contribution = 0.1
 			env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 			env.tonemap_exposure = 0.97
 			env.glow_enabled = true

@@ -25,7 +25,7 @@ static func key_light(profile: String = "field") -> DirectionalLight3D:
 
 static func make_camera(profile: String = "field") -> Camera3D:
 	var cam := Camera3D.new()
-	cam.fov = 42.0 if profile == "battle" else 30.0
+	cam.fov = 42.0 if profile == "battle" else 30.0  # CB world FOV = 30
 	apply_dof(cam, profile)
 	return cam
 
@@ -39,12 +39,13 @@ static func apply_dof(cam: Camera3D, profile: String = "field") -> void:
 			attr.dof_blur_amount = 0.12
 		_:
 			attr.dof_blur_far_enabled = true
-			attr.dof_blur_far_distance = 38.0
-			attr.dof_blur_far_transition = 8.0
+			# Exact Cassette Beasts daylight DOF (far 51/20, near 37/5).
+			attr.dof_blur_far_distance = 51.0
+			attr.dof_blur_far_transition = 20.0
 			attr.dof_blur_near_enabled = true
-			attr.dof_blur_near_distance = 12.0
+			attr.dof_blur_near_distance = 37.0
 			attr.dof_blur_near_transition = 5.0
-			attr.dof_blur_amount = 0.20
+			attr.dof_blur_amount = 0.12
 	cam.attributes = attr
 
 static func backdrop(tex_path: String, size: Vector2, pos: Vector3, modulate: Color = Color.WHITE) -> MeshInstance3D:

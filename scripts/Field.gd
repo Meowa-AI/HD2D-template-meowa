@@ -18,8 +18,8 @@ const ENCOUNTER_CHANCE := 0.22
 
 var _player: CharacterBody3D
 var _cam: Camera3D
-var _cam_offset := Vector3(0.0, 10.5, 18.0)
-var _cam_look := Vector3(0.0, 1.6, 0.0)
+var _cam_offset := Vector3(0.0, 27.5, 39.3)  # CB: ~48 units back at -35deg pitch
+var _cam_look := Vector3(0.0, 2.0, 0.0)
 
 var _interactables: Array = []
 var _grass_zones: Array = []
