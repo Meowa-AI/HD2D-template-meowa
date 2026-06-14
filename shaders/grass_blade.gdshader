@@ -11,10 +11,19 @@ uniform vec3 body_0 = vec3(99999.0);
 uniform vec3 body_1 = vec3(99999.0);
 uniform float avoid_distance = 1.7;
 uniform float blade_height = 0.7;
+uniform vec2 pond_center = vec2(9999.0);
+uniform float pond_radius = 0.0;
+uniform sampler2D heightmap : hint_default_black;  // terrain height (R, world)
+uniform vec2 hm_min = vec2(0.0);
+uniform float hm_size = 1.0;
+
+varying float v_kill;
 
 void vertex() {
 	float hw = clamp(VERTEX.y / blade_height, 0.0, 1.0); // 0 at base, 1 at tip
-	vec3 wpos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	vec3 wpos = MODEL_MATRIX[3].xyz;                      // blade root in world
+	// lift the blade onto the terrain surface
+	VERTEX.y += texture(heightmap, (wpos.xz - hm_min) / hm_size).r;
 	// per-blade phase from world XZ so blades ripple out of sync
 	float ph = wpos.x * 0.6 + wpos.z * 0.55;
 	vec3 sway = wind_strength * sin(wind_phase + ph) * hw;
@@ -31,12 +40,13 @@ void vertex() {
 	}
 	VERTEX += sway + push;  // no rotation on the quad → world offset == local offset
 	NORMAL = normalize(vec3(0.0, 0.8, 0.9));  // catch ambient/sun fairly uniformly
+	v_kill = distance(wpos.xz, pond_center) < pond_radius ? 1.0 : 0.0;  // no grass in the pond
 }
 
 void fragment() {
 	vec4 t = texture(tex, UV);
 	ALBEDO = t.rgb;
-	ALPHA = t.a;
+	ALPHA = t.a * (1.0 - v_kill);
 	ALPHA_SCISSOR_THRESHOLD = 0.4;
 	ROUGHNESS = 1.0;
 }

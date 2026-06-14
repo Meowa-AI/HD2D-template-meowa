@@ -1,43 +1,69 @@
 extends RefCounted
-## CB-style tiered terrain: a flat central meadow ringed by rising grass terraces
-## with dirt cliff walls. Built as two surfaces (grass tops, dirt cliff walls) on
-## one MeshInstance3D, plus a trimesh StaticBody3D so the player is contained in
-## the meadow and the cliffs read as solid geometry catching the light.
+## Large explorable multi-biome terrain (CB-style). A rolling walkable landscape
+## with distinct biome regions — grassland, flower meadow, forest, rocky highland
+## plateau, and a lakeside basin — connected by gentle slopes, ringed by tall
+## border cliffs. Tile tops are textured per biome; short steps get grass walls,
+## tall steps get rock cliffs. The player walks the surface (height-snapped).
 
-const CELL := 4.0       # tile size
-const FLAT := 12.0      # chebyshev radius of the flat playable meadow
-const STEP := 5.0       # horizontal width of each terrace
-const RISE := 3.4       # vertical height per terrace
-const MAX_TIER := 3
-const TILE_UV := 1.0 / 6.0   # texture repeats per world unit (matches ground feel)
+const CELL := 4.0
+const TILE_UV := 1.0 / 6.0
 
-# A sunken pond carved into the meadow.
-const POND := Vector2(-9.0, -8.0)
-const POND_R := 5.5
-const POND_Y := -1.4
+# Region anchors.
+const PLATEAU := Vector2(42.0, -40.0)   # rocky highland centre
+const LAKE := Vector2(-46.0, 10.0)      # lake centre
+const LAKE_Y := -2.0
+const WATER_LEVEL := -0.45              # player can't walk below this (into water)
+const PLATEAU_Y := 6.5
 
-# Stepped terraces that rise to the NORTH (-z, ahead of the camera) and the
-# sides (|x|), but leave the SOUTH (+z, behind the camera) open and flat so the
-# camera looks into the terraced landscape over open ground.
+# Biome ids → ground textures.
+const TEX := [
+	"res://assets/textures/grass.png",          # 0 grassland
+	"res://assets/textures/flower_meadow.png",   # 1 flower meadow
+	"res://assets/textures/forest_floor.png",    # 2 forest
+	"res://assets/textures/rock_ground.png",     # 3 highland
+	"res://assets/textures/sand.png",            # 4 lakeside
+]
+
+# ---- world shape -----------------------------------------------------------
+
 static func height_at(x: float, z: float) -> float:
-	if Vector2(x, z).distance_to(POND) < POND_R:
-		return POND_Y                   # sunken flat pond bottom
-	var north: float = -z - FLAT        # distance past the flat edge to the north
-	var side: float = absf(x) - FLAT    # distance past the flat edge to a side
-	var d: float = maxf(north, side)
-	if d <= 0.0:
-		return 0.0
-	var tier: int = int(ceil(d / STEP))
-	tier = mini(tier, MAX_TIER)
-	return float(tier) * RISE
+	var edge: float = maxf(absf(x), absf(z))
+	if edge > 66.0:
+		return 16.0                                   # tall border cliffs
+	# gentle rolling base
+	var h := 1.5 * sin(x * 0.045) * cos(z * 0.05) + 1.0 * sin(x * 0.08 + 1.3) * sin(z * 0.06 + 0.7) + 1.6
+	# rocky highland plateau (radial ramp)
+	var pd: float = Vector2(x, z).distance_to(PLATEAU)
+	var up: float = clampf((26.0 - pd) / 14.0, 0.0, 1.0)
+	h = lerpf(h, PLATEAU_Y, up)
+	# lake basin (radial dip)
+	var ld: float = Vector2(x, z).distance_to(LAKE)
+	if ld < 17.0:
+		h = lerpf(h, LAKE_Y, clampf((17.0 - ld) / 7.0, 0.0, 1.0))
+	return h
 
-static func build(half: float, grass_tex: String, cliff_tex: String) -> Node3D:
+static func biome_at(x: float, z: float) -> int:
+	if Vector2(x, z).distance_to(PLATEAU) < 19.0:
+		return 3                                      # rocky highland
+	if Vector2(x, z).distance_to(LAKE) < 21.0:
+		return 4                                      # lakeside sand
+	if z < -24.0 and x < 16.0:
+		return 2                                      # forest
+	if x > 18.0 and z > 16.0:
+		return 1                                      # flower meadow
+	return 0                                          # grassland
+
+# ---- mesh build ------------------------------------------------------------
+
+static func build(half: float = 72.0) -> Node3D:
 	var root := Node3D.new()
-
-	var tops := SurfaceTool.new()
-	tops.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var walls := SurfaceTool.new()
-	walls.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var tops: Array[SurfaceTool] = []
+	for i in TEX.size():
+		var st := SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLES)
+		tops.append(st)
+	var gwall := SurfaceTool.new(); gwall.begin(Mesh.PRIMITIVE_TRIANGLES)   # short grassy steps
+	var cwall := SurfaceTool.new(); cwall.begin(Mesh.PRIMITIVE_TRIANGLES)   # tall rock cliffs
 
 	var n := int(half * 2.0 / CELL)
 	for gx in n:
@@ -49,51 +75,46 @@ static func build(half: float, grass_tex: String, cliff_tex: String) -> Node3D:
 			var cx := x0 + CELL * 0.5
 			var cz := z0 + CELL * 0.5
 			var h := height_at(cx, cz)
-			_add_top(tops, x0, z0, x1, z1, h)
-			_maybe_wall(walls, x1, z0, x1, z1, h, height_at(cx + CELL, cz))  # +x face
-			_maybe_wall(walls, x0, z1, x0, z0, h, height_at(cx - CELL, cz))  # -x face
-			_maybe_wall(walls, x1, z1, x0, z1, h, height_at(cx, cz + CELL))  # +z face
-			_maybe_wall(walls, x0, z0, x1, z0, h, height_at(cx, cz - CELL))  # -z face
+			_add_top(tops[biome_at(cx, cz)], x0, z0, x1, z1, h)
+			_wall(gwall, cwall, x1, z0, x1, z1, h, height_at(cx + CELL, cz))
+			_wall(gwall, cwall, x0, z1, x0, z0, h, height_at(cx - CELL, cz))
+			_wall(gwall, cwall, x1, z1, x0, z1, h, height_at(cx, cz + CELL))
+			_wall(gwall, cwall, x0, z0, x1, z0, h, height_at(cx, cz - CELL))
 
-	var top_mesh := tops.commit()
-	var wall_mesh := walls.commit()
-
-	# Merge both into one ArrayMesh (surface 0 = grass tops, surface 1 = walls).
 	var mesh := ArrayMesh.new()
-	if top_mesh.get_surface_count() > 0:
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, top_mesh.surface_get_arrays(0))
-	if wall_mesh.get_surface_count() > 0:
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, wall_mesh.surface_get_arrays(0))
+	var mats: Array[Material] = []
+	for i in TEX.size():
+		var m := tops[i].commit()
+		if m.get_surface_count() > 0:
+			mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, m.surface_get_arrays(0))
+			mats.append(_mat(TEX[i], Color(1, 1, 1), 1.0))
+	var gm := gwall.commit()
+	if gm.get_surface_count() > 0:
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, gm.surface_get_arrays(0))
+		mats.append(_mat("res://assets/textures/grass.png", Color(0.85, 0.92, 0.8), 1.0))
+	var cm := cwall.commit()
+	if cm.get_surface_count() > 0:
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, cm.surface_get_arrays(0))
+		mats.append(_mat("res://assets/textures/cliff.png", Color(1.0, 0.98, 0.94), 0.5))
+	for i in mats.size():
+		mesh.surface_set_material(i, mats[i])
 
 	var mi := MeshInstance3D.new()
 	mi.mesh = mesh
-	mi.material_override = null
-	mesh.surface_set_material(0, _grass_material(grass_tex))
-	if mesh.get_surface_count() > 1:
-		mesh.surface_set_material(1, _cliff_material(cliff_tex))
 	root.add_child(mi)
-
-	# Trimesh collision (walls + tops) keeps the player in the meadow.
-	var body := StaticBody3D.new()
-	var shape := CollisionShape3D.new()
-	shape.shape = mesh.create_trimesh_shape()
-	body.add_child(shape)
-	root.add_child(body)
-
 	return root
 
-# Stylized water surface filling the sunken pond.
 static func water() -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
 	var pm := PlaneMesh.new()
-	pm.size = Vector2(POND_R * 2.05, POND_R * 2.05)
-	pm.subdivide_width = 14
-	pm.subdivide_depth = 14
+	pm.size = Vector2(34.0, 34.0)
+	pm.subdivide_width = 24
+	pm.subdivide_depth = 24
 	mi.mesh = pm
 	var mat := ShaderMaterial.new()
 	mat.shader = load("res://shaders/water.gdshader")
 	pm.material = mat
-	mi.position = Vector3(POND.x, -0.25, POND.y)
+	mi.position = Vector3(LAKE.x, WATER_LEVEL, LAKE.y)
 	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var ml := Engine.get_main_loop()
 	if ml is SceneTree:
@@ -102,55 +123,38 @@ static func water() -> MeshInstance3D:
 			ws.register(mat)
 	return mi
 
-static func _add_top(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, y: float) -> void:
-	var p00 := Vector3(x0, y, z0)
-	var p10 := Vector3(x1, y, z0)
-	var p11 := Vector3(x1, y, z1)
-	var p01 := Vector3(x0, y, z1)
-	var up := Vector3.UP
-	_tri(st, p00, p10, p11, up, Vector2(x0, z0) * TILE_UV, Vector2(x1, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV)
-	_tri(st, p00, p11, p01, up, Vector2(x0, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV, Vector2(x0, z1) * TILE_UV)
+# ---- helpers ---------------------------------------------------------------
 
-# A vertical cliff face from this cell's edge (a..b at height h) down to nh.
-static func _maybe_wall(st: SurfaceTool, ax: float, az: float, bx: float, bz: float, h: float, nh: float) -> void:
+static func _add_top(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, y: float) -> void:
+	var p00 := Vector3(x0, y, z0); var p10 := Vector3(x1, y, z0)
+	var p11 := Vector3(x1, y, z1); var p01 := Vector3(x0, y, z1)
+	_tri(st, p00, p10, p11, Vector3.UP, Vector2(x0, z0) * TILE_UV, Vector2(x1, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV)
+	_tri(st, p00, p11, p01, Vector3.UP, Vector2(x0, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV, Vector2(x0, z1) * TILE_UV)
+
+static func _wall(gw: SurfaceTool, cw: SurfaceTool, ax: float, az: float, bx: float, bz: float, h: float, nh: float) -> void:
 	if nh >= h:
 		return
-	var top_a := Vector3(ax, h, az)
-	var top_b := Vector3(bx, h, bz)
-	var bot_a := Vector3(ax, nh, az)
-	var bot_b := Vector3(bx, nh, bz)
-	# outward normal = horizontal perpendicular of the edge
-	var edge := (top_b - top_a).normalized()
-	var nrm := Vector3(edge.z, 0.0, -edge.x)
-	var vspan := h - nh
-	_tri(st, top_a, top_b, bot_b, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, 0), Vector2(CELL * TILE_UV, vspan * TILE_UV))
-	_tri(st, top_a, bot_b, bot_a, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, vspan * TILE_UV), Vector2(0, vspan * TILE_UV))
+	var st := gw if (h - nh) < 2.2 else cw       # short steps grassy, tall steps rocky
+	var ta := Vector3(ax, h, az); var tb := Vector3(bx, h, bz)
+	var ba := Vector3(ax, nh, az); var bb := Vector3(bx, nh, bz)
+	var e := (tb - ta).normalized()
+	var nrm := Vector3(e.z, 0.0, -e.x)
+	var v := h - nh
+	_tri(st, ta, tb, bb, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, 0), Vector2(CELL * TILE_UV, v * TILE_UV))
+	_tri(st, ta, bb, ba, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, v * TILE_UV), Vector2(0, v * TILE_UV))
 
 static func _tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, nrm: Vector3, ua: Vector2, ub: Vector2, uc: Vector2) -> void:
 	st.set_normal(nrm); st.set_uv(ua); st.add_vertex(a)
 	st.set_normal(nrm); st.set_uv(ub); st.add_vertex(b)
 	st.set_normal(nrm); st.set_uv(uc); st.add_vertex(c)
 
-static func _grass_material(tex_path: String) -> StandardMaterial3D:
-	var m := StandardMaterial3D.new()
-	if ResourceLoader.exists(tex_path):
-		var t = load(tex_path)
-		t.set_meta("repeat", true)
-		m.albedo_texture = t
-	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
-	m.uv1_scale = Vector3.ONE
-	m.roughness = 0.95
-	m.metallic = 0.0
-	m.cull_mode = BaseMaterial3D.CULL_DISABLED
-	return m
-
-static func _cliff_material(tex_path: String) -> StandardMaterial3D:
+static func _mat(tex_path: String, tint: Color, uv: float) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	if ResourceLoader.exists(tex_path):
 		m.albedo_texture = load(tex_path)
-	m.albedo_color = Color(1.0, 0.98, 0.94)  # rock texture (already brightened)
+	m.albedo_color = tint
 	m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST_WITH_MIPMAPS
-	m.uv1_scale = Vector3(0.5, 0.5, 1.0)
+	m.uv1_scale = Vector3(uv, uv, 1.0)
 	m.roughness = 1.0
 	m.metallic = 0.0
 	m.cull_mode = BaseMaterial3D.CULL_DISABLED

@@ -12,7 +12,7 @@ const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
 const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
 const MonsterScene := preload("res://scripts/Monster.gd")
 
-const GROUND_SIZE := 80.0
+const GROUND_SIZE := 144.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
 const ENCOUNTER_CHANCE := 0.22
 
@@ -41,7 +41,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_light()
 	_build_ground()
-	add_child(GrassField.build(TieredTerrain.FLAT * 2.0, 24000, 0.9, TieredTerrain.POND, TieredTerrain.POND_R + 0.5))  # grass blanket (excludes the pond)
+	add_child(GrassField.build(150.0, 46000, 0.9, TieredTerrain.LAKE, 20.0))  # grass blanket (excludes the lake)
 	var clouds := CloudShadowsScene.new()
 	clouds.setup(GROUND_SIZE * 0.5)
 	add_child(clouds)
@@ -49,15 +49,13 @@ func _ready() -> void:
 	daynight.sun = _sun
 	daynight.env = _env
 	add_child(daynight)
-	_build_bounds()
 	_spawn_props()
-	_spawn_grass_zones()
 	_spawn_npcs()
 	_spawn_player()
 	_spawn_monsters()
 	_build_camera()
 	add_child(HD2DStage.dust(GROUND_SIZE))
-	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(-6.5, 2.6, 9.0)))
+	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(2.0, 2.6, 22.0)))
 	_build_ui()
 	Audio.play_bgm("res://assets/audio/field_bgm.mp3")
 
@@ -77,15 +75,10 @@ func _build_light() -> void:
 
 # --------------------------------------------------------------------- ground
 func _build_ground() -> void:
-	# CB-style tiered terrain: flat meadow ringed by rising grass terraces with
-	# dirt cliff faces. Replaces the old flat plane.
-	add_child(TieredTerrain.build(GROUND_SIZE * 0.5, "res://assets/textures/grass.png", "res://assets/textures/cliff.png"))
+	# Large multi-biome walkable landscape (grassland / flower / forest / highland
+	# / lakeside) with rolling slopes and border cliffs.
+	add_child(TieredTerrain.build(GROUND_SIZE * 0.5))
 	add_child(TieredTerrain.water())
-
-	# A winding dirt path on the flat meadow: a few overlapping strips.
-	var path_points := [Vector3(-26, 0, 18), Vector3(-8, 0, 6), Vector3(4, 0, -4), Vector3(18, 0, -18)]
-	for i in range(path_points.size() - 1):
-		_path_strip(path_points[i], path_points[i + 1])
 
 func _path_strip(a: Vector3, b: Vector3) -> void:
 	var mid := (a + b) * 0.5
@@ -106,65 +99,69 @@ func _path_strip(a: Vector3, b: Vector3) -> void:
 	mi.rotation.y = atan2(dir.x, dir.z)
 	add_child(mi)
 
-func _build_bounds() -> void:
-	var h := GROUND_SIZE * 0.5
-	for d in [Vector3(0, 0, -h), Vector3(0, 0, h), Vector3(-h, 0, 0), Vector3(h, 0, 0)]:
-		var body := StaticBody3D.new()
-		var col := CollisionShape3D.new()
-		var box := BoxShape3D.new()
-		var horizontal: bool = absf(d.z) > absf(d.x)
-		box.size = Vector3(GROUND_SIZE if horizontal else 1.0, 6.0, 1.0 if horizontal else GROUND_SIZE)
-		col.shape = box
-		body.add_child(col)
-		body.position = d + Vector3(0, 3, 0)
-		add_child(body)
-
 # ---------------------------------------------------------------------- props
 func _spawn_props() -> void:
-	# Perimeter forest — ring of trees with a bit of jitter.
-	var trees := ["tree_oak", "tree_pine", "tree_birch", "tree_willow", "tree_maple", "tree_blossom", "tree_dead"]
-	var ring := GROUND_SIZE * 0.5 - 2.0
-	var count := 80
-	for i in count:
-		var ang := TAU * float(i) / float(count)
-		# Two staggered rows of trees so the treeline fully hides the horizon.
-		for row in 2:
-			var r := ring - row * 3.5 - randf() * 4.0
-			var pos := Vector3(cos(ang) * r, 0, sin(ang) * r)
-			var name: String = trees[randi() % trees.size()]
-			_add_billboard_prop("res://assets/sprites/props/%s.png" % name, pos, 4.2 + randf() * 1.6, true, 0.5 + randf() * 0.4)
-
-	# Scattered inner trees & bushes for depth — kept in the far half so they
-	# never block the camera, which sits behind the player (high +Z).
-	for i in 16:
-		var pos := Vector3(randf_range(-24, 24), 0, randf_range(-24, 6))
-		if pos.length() < 6.0:
+	var H := GROUND_SIZE * 0.5 - 8.0
+	var spawn := Vector3(0, 0, 22)   # keep the start clearing open
+	for i in 900:
+		var x := randf_range(-H, H)
+		var z := randf_range(-H, H)
+		if TieredTerrain.height_at(x, z) <= TieredTerrain.WATER_LEVEL + 0.2:
 			continue
-		var pick: String = ["tree_oak", "tree_pine", "bush", "bush", "tree_blossom", "tree_maple"][randi() % 6]
-		var h := 1.4 if pick == "bush" else 3.4
-		_add_billboard_prop("res://assets/sprites/props/%s.png" % pick, pos, h + randf() * 0.6, pick != "bush", 0.8 + randf() * 0.4)
+		if Vector2(x, z).distance_to(Vector2(spawn.x, spawn.z)) < 9.0:
+			continue
+		_scatter_one(TieredTerrain.biome_at(x, z), x, z)
 
-	# A little camp near the path crossing.
-	_add_billboard_prop("res://assets/sprites/props/well.png", Vector3(-9, 0, 7), 2.0, true)
-	_add_billboard_prop("res://assets/sprites/props/barrel.png", Vector3(-11.5, 0, 8.5), 1.2, true)
-	_add_billboard_prop("res://assets/sprites/props/crate.png", Vector3(-12.5, 0, 7.2), 1.2, true)
-	_add_billboard_prop("res://assets/sprites/props/lamp.png", Vector3(-6.5, 0, 9.0), 2.4, true)
-	_add_billboard_prop("res://assets/sprites/props/fence.png", Vector3(-9, 0, 11.5), 1.3, false)
-	_add_billboard_prop("res://assets/sprites/props/fence.png", Vector3(-6, 0, 11.5), 1.3, false)
+	# Start-clearing camp (grassland).
+	_add_billboard_prop("res://assets/sprites/props/well.png", Vector3(-7, 0, 24), 2.0, true)
+	_add_billboard_prop("res://assets/sprites/props/barrel.png", Vector3(-9, 0, 25.5), 1.2, true)
+	_add_billboard_prop("res://assets/sprites/props/crate.png", Vector3(-10, 0, 24), 1.2, true)
+	_add_billboard_prop("res://assets/sprites/props/lamp.png", Vector3(-4.5, 0, 25), 2.4, true)
 
-	# Examinable signpost and treasure chest.
-	var sign_node := _add_billboard_prop("res://assets/sprites/props/signpost.png", Vector3(-3, 0, 4), 1.8, true)
+	var sign_node := _add_billboard_prop("res://assets/sprites/props/signpost.png", Vector3(4, 0, 18), 1.8, true)
 	_interactables.append({
-		"pos": sign_node.global_position, "prompt": "Read",
-		"name": "Signpost",
-		"lines": ["  ← Riverford Village    Cobweb Forest →", "Beware: monsters lurk in the tall brush."],
+		"pos": sign_node.global_position, "prompt": "Read", "name": "Signpost",
+		"lines": ["  ↑ Mistral Forest      Highcrag Plateau →", "  ← Still Lake", "Beasts roam the wilds. Step carefully."],
 	})
-	var chest_node := _add_billboard_prop("res://assets/sprites/props/chest.png", Vector3(16, 0, 14), 1.3, true)
+	# Reward chest hidden atop the highland plateau — walk up to reach it.
+	var chest_node := _add_billboard_prop("res://assets/sprites/props/chest.png", Vector3(42, 0, -40), 1.3, true)
 	_interactables.append({
-		"pos": chest_node.global_position, "prompt": "Open",
-		"name": "Treasure Chest",
-		"lines": ["You found 150 leaves and a Healing Grape!", "(Your party feels encouraged.)"],
+		"pos": chest_node.global_position, "prompt": "Open", "name": "Treasure Chest",
+		"lines": ["You found 300 leaves and a Star Shard!", "(Your party feels emboldened.)"],
 	})
+
+# Place one biome-appropriate prop at (x,z).
+func _scatter_one(biome: int, x: float, z: float) -> void:
+	var p := Vector3(x, 0, z)
+	var r := randf()
+	match biome:
+		2:  # forest — dense conifers/broadleaf + brush
+			if r < 0.8:
+				var t: String = ["tree_oak", "tree_pine", "tree_birch", "tree_willow", "tree_maple"][randi() % 5]
+				_add_billboard_prop("res://assets/sprites/props/%s.png" % t, p, 3.6 + randf() * 1.8, true, 0.55 + randf() * 0.4)
+			elif r < 0.95:
+				_add_billboard_prop("res://assets/sprites/props/bush.png", p, 1.1 + randf() * 0.5, false, 1.2)
+		3:  # highland — rocks + the odd dead tree (sparse)
+			if r < 0.4:
+				_add_billboard_prop("res://assets/sprites/props/rock.png", p, 1.0 + randf() * 1.3, true)
+			elif r < 0.5:
+				_add_billboard_prop("res://assets/sprites/props/tree_dead.png", p, 2.8 + randf(), true, 0.7)
+		4:  # lakeside — reed clumps + a few willows
+			if r < 0.45:
+				_add_billboard_prop("res://assets/sprites/props/bush.png", p, 0.8 + randf() * 0.5, false, 1.5)
+			elif r < 0.55:
+				_add_billboard_prop("res://assets/sprites/props/tree_willow.png", p, 3.2 + randf(), true, 0.7)
+		1:  # flower meadow — blossom trees + bushes (open)
+			if r < 0.16:
+				_add_billboard_prop("res://assets/sprites/props/tree_blossom.png", p, 3.2 + randf(), true, 0.6)
+			elif r < 0.32:
+				_add_billboard_prop("res://assets/sprites/props/bush.png", p, 1.0 + randf() * 0.4, false, 1.2)
+		_:  # grassland — scattered trees + bushes (open)
+			if r < 0.13:
+				var t2: String = ["tree_oak", "tree_maple", "tree_blossom"][randi() % 3]
+				_add_billboard_prop("res://assets/sprites/props/%s.png" % t2, p, 3.4 + randf() * 1.2, true, 0.6)
+			elif r < 0.26:
+				_add_billboard_prop("res://assets/sprites/props/bush.png", p, 1.1 + randf() * 0.4, false, 1.2)
 
 func _add_billboard_prop(tex_path: String, pos: Vector3, height: float, shadow: bool, sway: float = 0.0) -> Node3D:
 	var root := Node3D.new()
@@ -244,7 +241,7 @@ func _on_grass_exited(body: Node) -> void:
 
 # ----------------------------------------------------------------------- NPCs
 func _spawn_npcs() -> void:
-	var elder := _add_animated_npc("res://assets/sprites/npc_elder_idle.png", 4, Vector3(-7.5, 0, 5.5), 2.3)
+	var elder := _add_animated_npc("res://assets/sprites/npc_elder_idle.png", 4, Vector3(-4, 0, 20), 2.3)
 	_interactables.append({
 		"pos": elder.global_position, "prompt": "Talk",
 		"name": "Elder Bramwell",
@@ -255,7 +252,7 @@ func _spawn_npcs() -> void:
 			"Remember: strike a foe's weakness to shatter its guard. A broken enemy is a helpless one.",
 		],
 	})
-	var merchant := _add_animated_npc("res://assets/sprites/npc_merchant_idle.png", 4, Vector3(-10.5, 0, 5.0), 2.2)
+	var merchant := _add_animated_npc("res://assets/sprites/npc_merchant_idle.png", 4, Vector3(-1, 0, 24), 2.2)
 	_interactables.append({
 		"pos": merchant.global_position, "prompt": "Talk",
 		"name": "Merchant Hana",
@@ -270,25 +267,32 @@ func _spawn_player() -> void:
 	_player = CharacterBody3D.new()
 	_player.set_script(load("res://scripts/Player.gd"))
 	_player.sprite_path = "res://assets/sprites/hero.png"
-	var start := Vector3(0, 0, 6)
+	var start := Vector3(0, 0, 22)
 	if SceneManager.has_meta("field_return_pos"):
 		start = SceneManager.get_meta("field_return_pos")
 		SceneManager.remove_meta("field_return_pos")
+	start.y = TieredTerrain.height_at(start.x, start.z)
 	_player.position = start
 	add_child(_player)
 
 func _spawn_monsters() -> void:
+	# Monsters spread across the biomes — walk up to them to start a fight.
 	var specs := [
-		{"s": "wolf_walk", "p": Vector3(8, 0, -3), "h": 2.0},
-		{"s": "goblin_walk", "p": Vector3(-5, 0, 0), "h": 1.9},
+		{"s": "goblin_walk", "p": Vector3(14, 0, 4), "h": 1.9},      # grassland
+		{"s": "wolf_walk", "p": Vector3(-8, 0, -32), "h": 2.0},      # forest
+		{"s": "wolf_walk", "p": Vector3(2, 0, -40), "h": 2.0},       # forest deep
+		{"s": "goblin_walk", "p": Vector3(34, 0, -34), "h": 1.9},    # highland slope
+		{"s": "goblin_walk", "p": Vector3(-30, 0, 24), "h": 1.9},    # lakeside
+		{"s": "wolf_walk", "p": Vector3(28, 0, 26), "h": 2.0},       # flower meadow
 	]
 	for cfg in specs:
 		var m := MonsterScene.new()
 		m.sheet_path = "res://assets/sprites/%s.png" % cfg["s"]
 		m.world_h = cfg["h"]
-		m.bound = TieredTerrain.FLAT - 2.0
+		m.bound = 11.0
 		m._player = _player
-		m.position = cfg["p"]
+		var p: Vector3 = cfg["p"]
+		m.position = Vector3(p.x, TieredTerrain.height_at(p.x, p.z), p.z)
 		add_child(m)
 
 func _build_camera() -> void:

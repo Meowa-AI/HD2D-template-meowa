@@ -1,7 +1,21 @@
 extends RefCounted
 ## Builds a static GPUParticles3D that blankets an area with grass-blade quads.
 ## Blades don't move via the particle system (zero velocity) — all motion is the
-## sway shader. Registers the material with WeatherSystem so wind drives it.
+## sway shader, which also lifts each blade onto the terrain via a baked
+## heightmap. Registers the material with WeatherSystem so wind drives it.
+
+const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
+
+# Bake the terrain height into an R-float texture covering [-area/2, area/2].
+static func _bake_heightmap(area: float, res: int = 192) -> ImageTexture:
+	var img := Image.create(res, res, false, Image.FORMAT_RF)
+	var half := area * 0.5
+	for j in res:
+		var wz := -half + (float(j) / float(res - 1)) * area
+		for i in res:
+			var wx := -half + (float(i) / float(res - 1)) * area
+			img.set_pixel(i, j, Color(TieredTerrain.height_at(wx, wz), 0, 0, 0))
+	return ImageTexture.create_from_image(img)
 
 static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, pond_center: Vector2 = Vector2(9999, 9999), pond_radius: float = 0.0) -> GPUParticles3D:
 	var p := GPUParticles3D.new()
@@ -12,7 +26,7 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, 
 	p.fixed_fps = 0
 	p.interpolate = false
 	# Big visibility AABB so the field isn't culled when the emitter origin is off-screen.
-	p.visibility_aabb = AABB(Vector3(-area * 0.5, 0, -area * 0.5), Vector3(area, blade_h + 3.0, area))
+	p.visibility_aabb = AABB(Vector3(-area * 0.5, -4.0, -area * 0.5), Vector3(area, 24.0, area))
 
 	var pm := ParticleProcessMaterial.new()
 	pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
@@ -35,6 +49,9 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, 
 	smat.set_shader_parameter("blade_height", blade_h)
 	smat.set_shader_parameter("pond_center", pond_center)
 	smat.set_shader_parameter("pond_radius", pond_radius)
+	smat.set_shader_parameter("heightmap", _bake_heightmap(area))
+	smat.set_shader_parameter("hm_min", Vector2(-area * 0.5, -area * 0.5))
+	smat.set_shader_parameter("hm_size", area)
 	qm.material = smat
 	p.draw_pass_1 = qm
 

@@ -10,15 +10,17 @@ var sheet_path := "res://assets/sprites/wolf_walk.png"
 var frames := 6
 var world_h := 2.0
 var speed := 2.3
-var bound := 10.0
+var bound := 12.0        # wander radius around home
 
 var _spr: Sprite3D
+var _home := Vector3.ZERO
 var _target := Vector3.ZERO
 var _repick_t := 0.0
 var _player: Node3D
 var _grace := 1.5
 
 func _ready() -> void:
+	_home = global_position
 	_spr = AnimatedBillboardScene.new()
 	add_child(_spr)
 	_spr.setup(load(sheet_path), frames, world_h, 7.0)
@@ -26,7 +28,13 @@ func _ready() -> void:
 	_pick_target()
 
 func _pick_target() -> void:
-	_target = Vector3(randf_range(-bound, bound), 0.0, randf_range(-bound, bound))
+	for _i in 6:  # avoid wandering into water
+		var a := randf() * TAU
+		var r := randf() * bound
+		var c := _home + Vector3(cos(a) * r, 0.0, sin(a) * r)
+		if TieredTerrain.height_at(c.x, c.z) > TieredTerrain.WATER_LEVEL + 0.3:
+			_target = c
+			break
 	_repick_t = randf_range(2.5, 5.0)
 
 func _process(delta: float) -> void:

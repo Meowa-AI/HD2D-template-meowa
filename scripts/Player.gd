@@ -3,8 +3,11 @@ extends CharacterBody3D
 ## the facing sheet is picked from the movement angle and a 6-frame walk cycle
 ## plays while moving (idle = first frame). Lit so it catches the scene light.
 
-const SPEED := 6.0
+const SPEED := 8.0
 const ACCEL := 18.0
+const MAX_STEP := 1.7   # max walkable height change per step; steeper = blocked (cliffs/water)
+
+const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
 
 const FRAME := 128          # walk-sheet frame size (px)
 const FRAMES := 6           # frames per walk sheet (768 / 128)
@@ -63,13 +66,22 @@ func _physics_process(delta: float) -> void:
 	if input.length() > 1.0:
 		input = input.normalized()
 
-	var target := Vector3(input.x, 0.0, input.y) * SPEED
-	velocity.x = move_toward(velocity.x, target.x, ACCEL * delta)
-	velocity.z = move_toward(velocity.z, target.z, ACCEL * delta)
-	var before := global_position
-	move_and_slide()
-	moved_this_frame = global_position.distance_to(before)
-	is_moving = input.length() > 0.05
+	# Walk on the terrain surface: axis-separated moves (so we slide along walls),
+	# each blocked if the height change is too steep (cliff) or below water.
+	var step := input * SPEED * delta
+	var pos := global_position
+	var base := TieredTerrain.height_at(pos.x, pos.z)
+	var hx := TieredTerrain.height_at(pos.x + step.x, pos.z)
+	if hx > TieredTerrain.WATER_LEVEL and absf(hx - base) <= MAX_STEP:
+		pos.x += step.x
+		base = hx
+	var hz := TieredTerrain.height_at(pos.x, pos.z + step.y)
+	if hz > TieredTerrain.WATER_LEVEL and absf(hz - base) <= MAX_STEP:
+		pos.z += step.y
+	moved_this_frame = Vector2(pos.x - global_position.x, pos.z - global_position.z).length()
+	pos.y = TieredTerrain.height_at(pos.x, pos.z)
+	global_position = pos
+	is_moving = input.length() > 0.05 and moved_this_frame > 0.0005
 
 	if is_moving:
 		_dir = DIR_KEYS[(int(round(atan2(input.x, input.y) / (PI / 4.0))) + 8) % 8]
