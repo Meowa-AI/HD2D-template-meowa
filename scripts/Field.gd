@@ -9,6 +9,7 @@ const GrassField := preload("res://scripts/GrassField.gd")
 const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
 const CloudShadowsScene := preload("res://scripts/CloudShadows.gd")
 const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
+const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
 
 const GROUND_SIZE := 80.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -177,6 +178,17 @@ func _add_billboard_prop(tex_path: String, pos: Vector3, height: float, shadow: 
 	add_child(root)
 	return root
 
+# An NPC that loops an idle animation spritesheet, sitting on the terrain.
+func _add_animated_npc(sheet_path: String, frames: int, pos: Vector3, height: float) -> Node3D:
+	var root := Node3D.new()
+	root.position = Vector3(pos.x, TieredTerrain.height_at(pos.x, pos.z), pos.z)
+	var spr := AnimatedBillboardScene.new()
+	root.add_child(spr)
+	spr.setup(load(sheet_path), frames, height, 4.0)
+	root.add_child(HD2D.blob_shadow(height * 0.16, 0.4))
+	add_child(root)
+	return root
+
 # ---------------------------------------------------------------- grass zones
 func _spawn_grass_zones() -> void:
 	_make_grass_zone(Vector3(10, 0, 2), Vector2(14, 12))
@@ -230,7 +242,7 @@ func _on_grass_exited(body: Node) -> void:
 
 # ----------------------------------------------------------------------- NPCs
 func _spawn_npcs() -> void:
-	var elder := _add_billboard_prop("res://assets/sprites/npc_elder.png", Vector3(-7.5, 0, 5.5), 2.3, true)
+	var elder := _add_animated_npc("res://assets/sprites/npc_elder_idle.png", 4, Vector3(-7.5, 0, 5.5), 2.3)
 	_interactables.append({
 		"pos": elder.global_position, "prompt": "Talk",
 		"name": "Elder Bramwell",
@@ -241,7 +253,7 @@ func _spawn_npcs() -> void:
 			"Remember: strike a foe's weakness to shatter its guard. A broken enemy is a helpless one.",
 		],
 	})
-	var merchant := _add_billboard_prop("res://assets/sprites/npc_merchant.png", Vector3(-10.5, 0, 5.0), 2.2, true)
+	var merchant := _add_animated_npc("res://assets/sprites/npc_merchant_idle.png", 4, Vector3(-10.5, 0, 5.0), 2.2)
 	_interactables.append({
 		"pos": merchant.global_position, "prompt": "Talk",
 		"name": "Merchant Hana",
