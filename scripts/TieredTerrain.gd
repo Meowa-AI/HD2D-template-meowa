@@ -7,7 +7,7 @@ extends RefCounted
 ## textured per biome and steep cells get the cliff texture. The player walks the
 ## surface (height-snapped).
 
-const CELL := 4.0
+const CELL := 2.0
 const TILE_UV := 1.0 / 6.0
 
 # Region anchors.
