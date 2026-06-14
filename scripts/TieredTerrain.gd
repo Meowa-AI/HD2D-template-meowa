@@ -2,8 +2,10 @@ extends RefCounted
 ## Large explorable multi-biome terrain (CB-style). A rolling walkable landscape
 ## with distinct biome regions — grassland, flower meadow, forest, rocky highland
 ## plateau, and a lakeside basin — connected by gentle slopes, ringed by tall
-## border cliffs. Tile tops are textured per biome; short steps get grass walls,
-## tall steps get rock cliffs. The player walks the surface (height-snapped).
+## border cliffs. The surface is a continuous heightfield (corners sampled from
+## height_at and shared between cells) so slopes are smooth, not stepped; tops are
+## textured per biome and steep cells get the cliff texture. The player walks the
+## surface (height-snapped).
 
 const CELL := 4.0
 const TILE_UV := 1.0 / 6.0
@@ -55,6 +57,8 @@ static func biome_at(x: float, z: float) -> int:
 
 # ---- mesh build ------------------------------------------------------------
 
+const CLIFF_SPAN := 3.0   # a cell whose corner heights span more than this is textured as cliff
+
 static func build(half: float = 72.0) -> Node3D:
 	var root := Node3D.new()
 	var tops: Array[SurfaceTool] = []
@@ -62,8 +66,7 @@ static func build(half: float = 72.0) -> Node3D:
 		var st := SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 		tops.append(st)
-	var gwall := SurfaceTool.new(); gwall.begin(Mesh.PRIMITIVE_TRIANGLES)   # short grassy steps
-	var cwall := SurfaceTool.new(); cwall.begin(Mesh.PRIMITIVE_TRIANGLES)   # tall rock cliffs
+	var cliff := SurfaceTool.new(); cliff.begin(Mesh.PRIMITIVE_TRIANGLES)   # steep faces (border, sharp drops)
 
 	var n := int(half * 2.0 / CELL)
 	for gx in n:
@@ -72,14 +75,13 @@ static func build(half: float = 72.0) -> Node3D:
 			var z0 := -half + gz * CELL
 			var x1 := x0 + CELL
 			var z1 := z0 + CELL
-			var cx := x0 + CELL * 0.5
-			var cz := z0 + CELL * 0.5
-			var h := height_at(cx, cz)
-			_add_top(tops[biome_at(cx, cz)], x0, z0, x1, z1, h)
-			_wall(gwall, cwall, x1, z0, x1, z1, h, height_at(cx + CELL, cz))
-			_wall(gwall, cwall, x0, z1, x0, z0, h, height_at(cx - CELL, cz))
-			_wall(gwall, cwall, x1, z1, x0, z1, h, height_at(cx, cz + CELL))
-			_wall(gwall, cwall, x0, z0, x1, z0, h, height_at(cx, cz - CELL))
+			# Shared-corner heightfield: adjacent cells read the same height_at at a
+			# shared corner, so the surface is continuous (no steps).
+			var h00 := height_at(x0, z0); var h10 := height_at(x1, z0)
+			var h11 := height_at(x1, z1); var h01 := height_at(x0, z1)
+			var span: float = maxf(maxf(h00, h10), maxf(h11, h01)) - minf(minf(h00, h10), minf(h11, h01))
+			var st: SurfaceTool = cliff if span > CLIFF_SPAN else tops[biome_at(x0 + CELL * 0.5, z0 + CELL * 0.5)]
+			_add_quad(st, x0, z0, x1, z1, h00, h10, h11, h01)
 
 	var mesh := ArrayMesh.new()
 	var mats: Array[Material] = []
@@ -88,11 +90,7 @@ static func build(half: float = 72.0) -> Node3D:
 		if m.get_surface_count() > 0:
 			mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, m.surface_get_arrays(0))
 			mats.append(_mat(TEX[i], Color(1, 1, 1), 1.0))
-	var gm := gwall.commit()
-	if gm.get_surface_count() > 0:
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, gm.surface_get_arrays(0))
-		mats.append(_mat("res://assets/textures/grass.png", Color(0.85, 0.92, 0.8), 1.0))
-	var cm := cwall.commit()
+	var cm := cliff.commit()
 	if cm.get_surface_count() > 0:
 		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, cm.surface_get_arrays(0))
 		mats.append(_mat("res://assets/textures/cliff.png", Color(1.0, 0.98, 0.94), 0.5))
@@ -125,28 +123,28 @@ static func water() -> MeshInstance3D:
 
 # ---- helpers ---------------------------------------------------------------
 
-static func _add_top(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, y: float) -> void:
-	var p00 := Vector3(x0, y, z0); var p10 := Vector3(x1, y, z0)
-	var p11 := Vector3(x1, y, z1); var p01 := Vector3(x0, y, z1)
-	_tri(st, p00, p10, p11, Vector3.UP, Vector2(x0, z0) * TILE_UV, Vector2(x1, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV)
-	_tri(st, p00, p11, p01, Vector3.UP, Vector2(x0, z0) * TILE_UV, Vector2(x1, z1) * TILE_UV, Vector2(x0, z1) * TILE_UV)
+# One terrain cell as two triangles, using the four corner heights. Normals are
+# sampled analytically from the height gradient so shading is smooth and matches
+# across biome/cliff surface seams.
+static func _add_quad(st: SurfaceTool, x0: float, z0: float, x1: float, z1: float, h00: float, h10: float, h11: float, h01: float) -> void:
+	var p00 := Vector3(x0, h00, z0); var p10 := Vector3(x1, h10, z0)
+	var p11 := Vector3(x1, h11, z1); var p01 := Vector3(x0, h01, z1)
+	var n00 := _normal_at(x0, z0); var n10 := _normal_at(x1, z0)
+	var n11 := _normal_at(x1, z1); var n01 := _normal_at(x0, z1)
+	var u00 := Vector2(x0, z0) * TILE_UV; var u10 := Vector2(x1, z0) * TILE_UV
+	var u11 := Vector2(x1, z1) * TILE_UV; var u01 := Vector2(x0, z1) * TILE_UV
+	_vtx(st, p00, n00, u00); _vtx(st, p10, n10, u10); _vtx(st, p11, n11, u11)
+	_vtx(st, p00, n00, u00); _vtx(st, p11, n11, u11); _vtx(st, p01, n01, u01)
 
-static func _wall(gw: SurfaceTool, cw: SurfaceTool, ax: float, az: float, bx: float, bz: float, h: float, nh: float) -> void:
-	if nh >= h:
-		return
-	var st := gw if (h - nh) < 2.2 else cw       # short steps grassy, tall steps rocky
-	var ta := Vector3(ax, h, az); var tb := Vector3(bx, h, bz)
-	var ba := Vector3(ax, nh, az); var bb := Vector3(bx, nh, bz)
-	var e := (tb - ta).normalized()
-	var nrm := Vector3(e.z, 0.0, -e.x)
-	var v := h - nh
-	_tri(st, ta, tb, bb, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, 0), Vector2(CELL * TILE_UV, v * TILE_UV))
-	_tri(st, ta, bb, ba, nrm, Vector2(0, 0), Vector2(CELL * TILE_UV, v * TILE_UV), Vector2(0, v * TILE_UV))
+# Surface normal from the height_at gradient (central differences).
+static func _normal_at(x: float, z: float) -> Vector3:
+	const E := 0.5
+	var dhx := height_at(x + E, z) - height_at(x - E, z)
+	var dhz := height_at(x, z + E) - height_at(x, z - E)
+	return Vector3(-dhx, 2.0 * E, -dhz).normalized()
 
-static func _tri(st: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, nrm: Vector3, ua: Vector2, ub: Vector2, uc: Vector2) -> void:
-	st.set_normal(nrm); st.set_uv(ua); st.add_vertex(a)
-	st.set_normal(nrm); st.set_uv(ub); st.add_vertex(b)
-	st.set_normal(nrm); st.set_uv(uc); st.add_vertex(c)
+static func _vtx(st: SurfaceTool, p: Vector3, nrm: Vector3, uv: Vector2) -> void:
+	st.set_normal(nrm); st.set_uv(uv); st.add_vertex(p)
 
 static func _mat(tex_path: String, tint: Color, uv: float) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
