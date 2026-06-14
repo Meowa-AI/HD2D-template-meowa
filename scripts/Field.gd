@@ -11,6 +11,7 @@ const CloudShadowsScene := preload("res://scripts/CloudShadows.gd")
 const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
 const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
 const MonsterScene := preload("res://scripts/Monster.gd")
+const DebugTunerScene := preload("res://scripts/DebugTuner.gd")
 
 const GROUND_SIZE := 144.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -20,6 +21,7 @@ var _player: CharacterBody3D
 var _cam: Camera3D
 var _cam_offset := Vector3(0.0, 11.5, 24.0)  # flatter ~20deg pitch, ~26 units back (Octopath/Until Then feel)
 var _cam_look := Vector3(0.0, 3.5, 0.0)
+var _daynight: Node
 
 var _interactables: Array = []
 var _grass_zones: Array = []
@@ -45,15 +47,16 @@ func _ready() -> void:
 	var clouds := CloudShadowsScene.new()
 	clouds.setup(GROUND_SIZE * 0.5)
 	add_child(clouds)
-	var daynight := DayNightCycleScene.new()
-	daynight.sun = _sun
-	daynight.env = _env
-	add_child(daynight)
+	_daynight = DayNightCycleScene.new()
+	_daynight.sun = _sun
+	_daynight.env = _env
+	add_child(_daynight)
 	_spawn_props()
 	_spawn_npcs()
 	_spawn_player()
 	_spawn_monsters()
 	_build_camera()
+	_build_tuner()
 	add_child(HD2DStage.dust(GROUND_SIZE))
 	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(2.0, 2.6, 22.0)))
 	_build_ui()
@@ -301,6 +304,11 @@ func _build_camera() -> void:
 	_cam.global_position = _player.position + _cam_offset
 	_cam.look_at(_player.position + _cam_look, Vector3.UP)
 	_cam.make_current()
+
+func _build_tuner() -> void:
+	var tuner := DebugTunerScene.new()
+	add_child(tuner)
+	tuner.setup(self, _cam, _env, _daynight)
 
 # ------------------------------------------------------------------------- UI
 func _build_ui() -> void:
