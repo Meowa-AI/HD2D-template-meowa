@@ -6,6 +6,7 @@ extends SceneTree
 
 const Env := preload("res://scripts/HD2DEnvironment.gd")
 const Stage := preload("res://scripts/HD2DStage.gd")
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
 
 var _fail := 0
 
@@ -69,6 +70,20 @@ func _initialize() -> void:
 	_eq(bc.fov, 42.0, "battle.cam.fov")
 	_eq((bc.attributes as CameraAttributesPractical).dof_blur_near_enabled, false, "battle.cam.no_near_dof")
 	_eq((bc.attributes as CameraAttributesPractical).dof_blur_amount, 0.12, "battle.cam.dof_amount")
+
+	OS.set_environment("MEOWA_WEB_COMPAT", "1")
+	var wf := Env.environment("field")
+	_eq(WebCompatibility.enabled(), true, "web.enabled")
+	_eq(wf.background_mode, Environment.BG_COLOR, "web.field.bg")
+	_eq(wf.glow_enabled, false, "web.field.no_glow")
+	_eq(wf.ssao_enabled, false, "web.field.no_ssao")
+	_eq(wf.fog_enabled, false, "web.field.no_fog")
+	var wc := Stage.make_camera("field")
+	_eq(wc.attributes, null, "web.field.no_dof")
+	var wd := Stage.dust(40.0, 220)
+	_eq(wd.amount, 60, "web.dust_count")
+	_eq(WebCompatibility.grass_blade_count(46000), 7000, "web.grass_count")
+	OS.set_environment("MEOWA_WEB_COMPAT", "0")
 
 	print("RESULT: %s" % ("PASS" if _fail == 0 else "FAIL (%d)" % _fail))
 	quit(_fail)

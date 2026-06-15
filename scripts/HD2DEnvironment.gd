@@ -3,10 +3,15 @@ extends RefCounted
 ## Returns the Environment resource ONLY — the caller wraps it in a
 ## WorldEnvironment and adds it to the tree.
 
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
+
 ## Returns a configured Environment for the given profile ("field" or "battle").
 ## Unknown profiles fall back to "field".
 static func environment(profile: String = "field") -> Environment:
 	var env := Environment.new()
+	if WebCompatibility.enabled():
+		_apply_web_environment(env, profile)
+		return env
 	match profile:
 		"battle":
 			env.background_mode = Environment.BG_COLOR
@@ -67,3 +72,21 @@ static func environment(profile: String = "field") -> Environment:
 			env.adjustment_contrast = 1.16
 			env.adjustment_saturation = 1.16
 	return env
+
+static func _apply_web_environment(env: Environment, profile: String) -> void:
+	match profile:
+		"battle":
+			env.background_mode = Environment.BG_COLOR
+			env.background_color = Color(0.04, 0.05, 0.08)
+			env.ambient_light_energy = 0.72
+		_:
+			env.background_mode = Environment.BG_COLOR
+			env.background_color = Color(0.22, 0.30, 0.42)
+			env.ambient_light_energy = 0.58
+	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	env.ambient_light_color = Color(0.349, 0.325, 0.420)
+	env.tonemap_mode = Environment.TONE_MAPPER_LINEAR
+	env.glow_enabled = false
+	env.ssao_enabled = false
+	env.fog_enabled = false
+	env.adjustment_enabled = false

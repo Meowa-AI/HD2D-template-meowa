@@ -2,6 +2,8 @@ extends RefCounted
 ## Shared HD-2D rig pieces, parameterized by scene profile. Construction only —
 ## no follow/update logic (that stays in the scene).
 
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
+
 static func key_light(profile: String = "field") -> DirectionalLight3D:
 	var sun := DirectionalLight3D.new()
 	match profile:
@@ -21,6 +23,8 @@ static func key_light(profile: String = "field") -> DirectionalLight3D:
 			# Angled from behind/above the camera (+Z) so it front-lights the
 			# camera-facing billboards (keeps sprites readable); slight side for shadow.
 			sun.rotation_degrees = Vector3(-48, -28, 0)
+	if WebCompatibility.enabled():
+		sun.shadow_enabled = false
 	return sun
 
 static func make_camera(profile: String = "field") -> Camera3D:
@@ -30,6 +34,9 @@ static func make_camera(profile: String = "field") -> Camera3D:
 	return cam
 
 static func apply_dof(cam: Camera3D, profile: String = "field") -> void:
+	if WebCompatibility.enabled():
+		cam.attributes = null
+		return
 	var attr := CameraAttributesPractical.new()
 	match profile:
 		"battle":
@@ -66,9 +73,9 @@ static func backdrop(tex_path: String, size: Vector2, pos: Vector3, modulate: Co
 # Drifting dust motes that catch the light — cheap, high-impact atmosphere.
 static func dust(area_size: float = 40.0, amount: int = 220) -> GPUParticles3D:
 	var p := GPUParticles3D.new()
-	p.amount = amount
-	p.lifetime = 9.0
-	p.preprocess = 9.0
+	p.amount = WebCompatibility.dust_count(amount)
+	p.lifetime = 6.0 if WebCompatibility.enabled() else 9.0
+	p.preprocess = p.lifetime
 	p.randomness = 1.0
 	var mat := ParticleProcessMaterial.new()
 	mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX

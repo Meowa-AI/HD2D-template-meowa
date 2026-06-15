@@ -5,6 +5,11 @@
 .godot/
 *.translation
 export_presets.cfg
+!export_presets.cfg
+build/
+output/
+__pycache__/
+*.pyc
 
 # Meowa generation working dirs
 **/.meow_art/

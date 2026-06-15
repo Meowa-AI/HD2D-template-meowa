@@ -12,6 +12,7 @@ const DayNightCycleScene := preload("res://scripts/DayNightCycle.gd")
 const AnimatedBillboardScene := preload("res://scripts/AnimatedBillboard.gd")
 const MonsterScene := preload("res://scripts/Monster.gd")
 const DebugTunerScene := preload("res://scripts/DebugTuner.gd")
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
 
 const GROUND_SIZE := 144.0
 const ENCOUNTER_STEP_THRESHOLD := 5.0   # distance walked in grass before a roll
@@ -43,7 +44,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_light()
 	_build_ground()
-	add_child(GrassField.build(150.0, 46000, 0.9, TieredTerrain.LAKE, 20.0))  # grass blanket (excludes the lake)
+	add_child(GrassField.build(150.0, WebCompatibility.grass_blade_count(46000), 0.9, TieredTerrain.LAKE, 20.0))  # grass blanket (excludes the lake)
 	var clouds := CloudShadowsScene.new()
 	clouds.setup(GROUND_SIZE * 0.5)
 	add_child(clouds)
@@ -56,7 +57,8 @@ func _ready() -> void:
 	_spawn_player()
 	_spawn_monsters()
 	_build_camera()
-	_build_tuner()
+	if not WebCompatibility.enabled():
+		_build_tuner()
 	add_child(HD2DStage.dust(GROUND_SIZE))
 	add_child(HD2DStage.accent_light(Color(1.0, 0.82, 0.45), 5.0, Vector3(2.0, 2.6, 22.0)))
 	_build_ui()
@@ -106,7 +108,7 @@ func _path_strip(a: Vector3, b: Vector3) -> void:
 func _spawn_props() -> void:
 	var H := GROUND_SIZE * 0.5 - 8.0
 	var spawn := Vector3(0, 0, 22)   # keep the start clearing open
-	for i in 900:
+	for i in WebCompatibility.prop_scatter_count(900):
 		var x := randf_range(-H, H)
 		var z := randf_range(-H, H)
 		if TieredTerrain.height_at(x, z) <= TieredTerrain.WATER_LEVEL + 0.2:

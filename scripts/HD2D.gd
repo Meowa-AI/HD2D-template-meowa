@@ -4,6 +4,8 @@ extends RefCounted
 ## stand in a real 3D world, plus soft grounded "blob" shadows. Used by both the
 ## field and the battle scenes so the two share one consistent style.
 
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
+
 static var _shadow_tex: ImageTexture
 
 # Build a Y-billboard pixel sprite. The node origin sits at the character's feet
@@ -29,7 +31,9 @@ static func character(tex_path: String, world_height: float = 2.4, shaded: bool 
 	return s
 
 # Soft circular shadow projected onto the ground beneath a character.
-static func blob_shadow(radius: float = 0.55, strength: float = 0.5) -> Decal:
+static func blob_shadow(radius: float = 0.55, strength: float = 0.5) -> Node3D:
+	if WebCompatibility.enabled():
+		return _flat_shadow(radius, strength)
 	var d := Decal.new()
 	d.texture_albedo = _get_shadow_texture()
 	d.size = Vector3(radius * 2.0, 1.2, radius * 2.0)
@@ -38,6 +42,25 @@ static func blob_shadow(radius: float = 0.55, strength: float = 0.5) -> Decal:
 	d.position.y = 0.02
 	d.cull_mask = 0xFFFFF
 	return d
+
+static func _flat_shadow(radius: float, strength: float) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var qm := QuadMesh.new()
+	qm.size = Vector2(radius * 2.0, radius * 2.0)
+	mi.mesh = qm
+	mi.rotation_degrees.x = -90.0
+	mi.position.y = 0.025
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var mat := StandardMaterial3D.new()
+	mat.albedo_texture = _get_shadow_texture()
+	mat.albedo_color = Color(0, 0, 0, strength)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.depth_draw_mode = BaseMaterial3D.DEPTH_DRAW_ALWAYS
+	qm.material = mat
+	return mi
 
 static func _get_shadow_texture() -> ImageTexture:
 	if _shadow_tex != null:

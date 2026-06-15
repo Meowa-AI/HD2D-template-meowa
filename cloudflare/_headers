@@ -1,0 +1,22 @@
+# Optional snippet for the shared game.meowa.ai Pages root.
+# Merge this into GAME_SITE_ROOT/_headers only if that root uses a headers file.
+/hd2d/*
+  X-Content-Type-Options: nosniff
+
+/hd2d/*.html
+  Cache-Control: public, max-age=300
+
+/hd2d/*.js
+  Content-Type: application/javascript; charset=utf-8
+  Cache-Control: public, max-age=31536000, immutable
+
+/hd2d/*.wasm
+  Content-Type: application/wasm
+  Cache-Control: public, max-age=31536000, immutable
+
+/hd2d/*.pck
+  Content-Type: application/octet-stream
+  Cache-Control: public, max-age=31536000, immutable
+
+/hd2d/*.png
+  Cache-Control: public, max-age=31536000, immutable

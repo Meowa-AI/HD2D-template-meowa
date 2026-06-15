@@ -35,6 +35,11 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
+renderer/rendering_method="forward_plus"
+renderer/rendering_method.web="gl_compatibility"
+renderer/rendering_method.web_compat="gl_compatibility"
 textures/default_filters/anisotropic_filtering_level=0
 anti_aliasing/quality/msaa_3d=2
+anti_aliasing/quality/msaa_3d.web=0
+anti_aliasing/quality/msaa_3d.web_compat=0
 environment/defaults/default_clear_color=Color(0.05, 0.06, 0.09, 1)

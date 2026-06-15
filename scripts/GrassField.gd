@@ -5,6 +5,7 @@ extends RefCounted
 ## heightmap. Registers the material with WeatherSystem so wind drives it.
 
 const TieredTerrain := preload("res://scripts/TieredTerrain.gd")
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
 
 # Bake the terrain height into an R-float texture covering [-area/2, area/2].
 static func _bake_heightmap(area: float, res: int = 192) -> ImageTexture:
@@ -19,11 +20,11 @@ static func _bake_heightmap(area: float, res: int = 192) -> ImageTexture:
 
 static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, pond_center: Vector2 = Vector2(9999, 9999), pond_radius: float = 0.0) -> GPUParticles3D:
 	var p := GPUParticles3D.new()
-	p.amount = count
+	p.amount = WebCompatibility.grass_blade_count(count)
 	p.lifetime = 1000.0
 	p.preprocess = 1.0
 	p.explosiveness = 1.0          # emit all at once; they then sit still
-	p.fixed_fps = 0
+	p.fixed_fps = 12 if WebCompatibility.enabled() else 0
 	p.interpolate = false
 	# Big visibility AABB so the field isn't culled when the emitter origin is off-screen.
 	p.visibility_aabb = AABB(Vector3(-area * 0.5, -4.0, -area * 0.5), Vector3(area, 24.0, area))
@@ -49,7 +50,7 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, 
 	smat.set_shader_parameter("blade_height", blade_h)
 	smat.set_shader_parameter("pond_center", pond_center)
 	smat.set_shader_parameter("pond_radius", pond_radius)
-	smat.set_shader_parameter("heightmap", _bake_heightmap(area))
+	smat.set_shader_parameter("heightmap", _bake_heightmap(area, WebCompatibility.grass_heightmap_resolution()))
 	smat.set_shader_parameter("hm_min", Vector2(-area * 0.5, -area * 0.5))
 	smat.set_shader_parameter("hm_size", area)
 	qm.material = smat
@@ -63,4 +64,3 @@ static func build(area: float = 80.0, count: int = 24000, blade_h: float = 0.9, 
 		if ws != null:
 			ws.register(smat)
 	return p
-

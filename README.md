@@ -24,6 +24,26 @@ godot --path .                 # opens the project (Title screen is the main sce
 > The project uses the **Forward+** renderer for the HD-2D depth-of-field, glow and
 > 3D lighting. It runs on software Vulkan (lavapipe) too, just slowly.
 
+## Web export
+
+The `Web` export preset targets Godot Web Compatibility/WebGL2 and enables the
+`web_compat` feature. That keeps the desktop Forward+ presentation intact while
+the browser build disables or reduces heavier effects such as DOF, SSAO, decals,
+and dense particle grass.
+
+```bash
+tools/export_web.sh
+python3 tools/serve_web.py --dir build/web
+```
+
+The Cloudflare Pages + R2 deployment path is documented in
+`cloudflare/README.md`; the canonical hosted URL is
+`https://game.meowa.ai/hd2d/`.
+
+For production, `tools/deploy_cloudflare.sh` writes a lightweight `/hd2d/`
+entrypoint into the shared `game.meowa.ai` Pages root and uploads versioned
+Godot runtime files to `game-assets.meowa.ai/hd2d/releases/<BUILD_VERSION>/`.
+
 ## Controls
 
 | Action | Keys |
@@ -75,6 +95,7 @@ The party: **Aldric** (Warrior/sword), **Seraphine** (Sorcerer/fire & ice),
 
 ```
 project.godot            Godot config (Forward+, autoloads, window)
+export_presets.cfg       Godot Web Compatibility export preset
 scenes/
   Title.tscn             Title screen
   Field.tscn             Explorable HD-2D field

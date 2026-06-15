@@ -8,6 +8,7 @@ const SPEED := 0.9          # world units / sec base drift
 const Y := 16.0             # decal height above the field
 const SIZE := 30.0          # blob diameter
 const STRENGTH := 0.34
+const WebCompatibility := preload("res://scripts/WebCompatibility.gd")
 
 var _half := 50.0
 var _decals: Array[Decal] = []
@@ -17,6 +18,9 @@ func setup(field_half: float) -> void:
 	_half = field_half + 10.0
 
 func _ready() -> void:
+	if WebCompatibility.enabled():
+		set_process(false)
+		return
 	var tex: Texture2D = null
 	if ResourceLoader.exists("res://assets/textures/cloud_blob.png"):
 		tex = load("res://assets/textures/cloud_blob.png")
